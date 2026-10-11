@@ -1,0 +1,291 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-11T16:42:20.280Z",
+  "title": "Design System: Cotiza Ya",
+  "extensions": {
+    "colorMeta": {
+      "papel": {
+        "role": "neutral",
+        "displayName": "Papel",
+        "canonical": "#F3EEE4",
+        "tonalRamp": [
+          "oklch(15% 0.007 84.6)",
+          "oklch(26% 0.009 84.6)",
+          "oklch(37% 0.011 84.6)",
+          "oklch(48% 0.013 84.6)",
+          "oklch(59% 0.014 84.6)",
+          "oklch(70% 0.012 84.6)",
+          "oklch(82% 0.010 84.6)",
+          "oklch(95% 0.007 84.6)"
+        ]
+      },
+      "papel-2": {
+        "role": "neutral",
+        "displayName": "Papel viejo",
+        "canonical": "#E8E1D3",
+        "tonalRamp": [
+          "oklch(15% 0.010 84.6)",
+          "oklch(26% 0.013 84.6)",
+          "oklch(37% 0.016 84.6)",
+          "oklch(48% 0.018 84.6)",
+          "oklch(59% 0.019 84.6)",
+          "oklch(70% 0.016 84.6)",
+          "oklch(82% 0.013 84.6)",
+          "oklch(95% 0.010 84.6)"
+        ]
+      },
+      "tinta": {
+        "role": "neutral",
+        "displayName": "Tinta",
+        "canonical": "#161616",
+        "tonalRamp": [
+          "oklch(15% 0.000 89.9)",
+          "oklch(26% 0.000 89.9)",
+          "oklch(37% 0.000 89.9)",
+          "oklch(48% 0.000 89.9)",
+          "oklch(59% 0.000 89.9)",
+          "oklch(70% 0.000 89.9)",
+          "oklch(82% 0.000 89.9)",
+          "oklch(95% 0.000 89.9)"
+        ]
+      },
+      "tinta-2": {
+        "role": "neutral",
+        "displayName": "Tinta corrida",
+        "canonical": "#4A4740",
+        "tonalRamp": [
+          "oklch(15% 0.006 87.5)",
+          "oklch(26% 0.008 87.5)",
+          "oklch(37% 0.009 87.5)",
+          "oklch(48% 0.011 87.5)",
+          "oklch(59% 0.012 87.5)",
+          "oklch(70% 0.010 87.5)",
+          "oklch(82% 0.008 87.5)",
+          "oklch(95% 0.006 87.5)"
+        ]
+      },
+      "amarillo": {
+        "role": "primary",
+        "displayName": "Marcador amarillo",
+        "canonical": "#F2C230",
+        "tonalRamp": [
+          "oklch(15% 0.079 89.0)",
+          "oklch(26% 0.101 89.0)",
+          "oklch(37% 0.123 89.0)",
+          "oklch(48% 0.145 89.0)",
+          "oklch(59% 0.151 89.0)",
+          "oklch(70% 0.129 89.0)",
+          "oklch(82% 0.105 89.0)",
+          "oklch(95% 0.079 89.0)"
+        ]
+      },
+      "rojo": {
+        "role": "secondary",
+        "displayName": "Corrección roja",
+        "canonical": "#C8372D",
+        "tonalRamp": [
+          "oklch(15% 0.092 28.5)",
+          "oklch(26% 0.117 28.5)",
+          "oklch(37% 0.142 28.5)",
+          "oklch(48% 0.167 28.5)",
+          "oklch(59% 0.174 28.5)",
+          "oklch(70% 0.149 28.5)",
+          "oklch(82% 0.122 28.5)",
+          "oklch(95% 0.092 28.5)"
+        ]
+      },
+      "verde": {
+        "role": "secondary",
+        "displayName": "Verde aceptada",
+        "canonical": "#2F6B3F",
+        "tonalRamp": [
+          "oklch(15% 0.047 150.1)",
+          "oklch(26% 0.060 150.1)",
+          "oklch(37% 0.073 150.1)",
+          "oklch(48% 0.086 150.1)",
+          "oklch(59% 0.090 150.1)",
+          "oklch(70% 0.077 150.1)",
+          "oklch(82% 0.063 150.1)",
+          "oklch(95% 0.047 150.1)"
+        ]
+      },
+      "aluminio": {
+        "role": "neutral",
+        "displayName": "Aluminio",
+        "canonical": "#8C9399",
+        "tonalRamp": [
+          "oklch(15% 0.006 243.7)",
+          "oklch(26% 0.008 243.7)",
+          "oklch(37% 0.009 243.7)",
+          "oklch(48% 0.011 243.7)",
+          "oklch(59% 0.011 243.7)",
+          "oklch(70% 0.010 243.7)",
+          "oklch(82% 0.008 243.7)",
+          "oklch(95% 0.006 243.7)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Rótulo",
+        "purpose": "Nombre de pantalla, uno por pantalla. Barlow Condensed 700 en mayúsculas."
+      },
+      "title": {
+        "displayName": "Encabezado",
+        "purpose": "Secciones, botones, etiqueta TOTAL y estados. Mayúsculas."
+      },
+      "body": {
+        "displayName": "Texto",
+        "purpose": "Texto de interfaz a 18 px por uso en exterior y vista cansada."
+      },
+      "label": {
+        "displayName": "Etiqueta",
+        "purpose": "Etiquetas de campos y descripción de partida."
+      },
+      "number": {
+        "displayName": "Medida",
+        "purpose": "Medidas, cantidades e importes en mono tabular, alineados a la derecha."
+      },
+      "total": {
+        "displayName": "Total",
+        "purpose": "Total de la cotización. El número más grande de la pantalla."
+      }
+    },
+    "shadows": [],
+    "motion": [],
+    "breakpoints": [
+      {
+        "name": "base",
+        "value": "360px"
+      },
+      {
+        "name": "contenido-max",
+        "value": "448px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Botón principal",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Acción principal de la pantalla. Una sola, fija abajo en móvil.",
+      "html": "<button class=\"ds-btn-primary\">ENVIAR POR WHATSAPP</button>",
+      "css": ".ds-btn-primary { background: var(--amarillo, #F2C230); color: var(--tinta, #161616); height: 56px; width: 100%; padding: 0 24px; border: 2px solid var(--tinta, #161616); border-radius: 4px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.25rem; letter-spacing: 0.02em; text-transform: uppercase; cursor: pointer; } .ds-btn-primary:hover { border-width: 3px; } .ds-btn-primary:active { border-width: 4px; } .ds-btn-primary:focus-visible { outline: 3px solid var(--tinta, #161616); outline-offset: 2px; }"
+    },
+    {
+      "name": "Botón secundario",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Acciones secundarias: papel con borde de tinta.",
+      "html": "<button class=\"ds-btn-secondary\">AGREGAR PARTIDA</button>",
+      "css": ".ds-btn-secondary { background: var(--papel, #F3EEE4); color: var(--tinta, #161616); height: 56px; padding: 0 24px; border: 2px solid var(--tinta, #161616); border-radius: 4px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.25rem; letter-spacing: 0.02em; text-transform: uppercase; cursor: pointer; } .ds-btn-secondary:hover, .ds-btn-secondary:active { background: var(--papel-2, #E8E1D3); } .ds-btn-secondary:focus-visible { outline: 3px solid var(--tinta, #161616); outline-offset: 2px; }"
+    },
+    {
+      "name": "Campo de medida",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Captura de medidas y precios: mono, a la derecha, con unidad visible.",
+      "html": "<label class=\"ds-field\"><span class=\"ds-field-label\">Ancho</span><span class=\"ds-field-box\"><input class=\"ds-input\" inputmode=\"decimal\" value=\"120\"><span class=\"ds-unit\">cm</span></span></label>",
+      "css": ".ds-field { display: flex; flex-direction: column; gap: 4px; font-family: 'Barlow', sans-serif; color: var(--tinta, #161616); } .ds-field-label { font-weight: 500; font-size: 1rem; } .ds-field-box { display: flex; align-items: center; height: 56px; border: 2px solid var(--tinta, #161616); border-radius: 4px; background: var(--papel, #F3EEE4); padding: 0 16px; gap: 8px; } .ds-field-box:focus-within { outline: 3px solid var(--tinta, #161616); outline-offset: 2px; } .ds-input { flex: 1; min-width: 0; border: 0; background: transparent; text-align: right; font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; font-size: 1.125rem; color: inherit; outline: none; } .ds-unit { font-family: 'JetBrains Mono', monospace; color: var(--tinta-2, #4A4740); }"
+    },
+    {
+      "name": "Partida",
+      "kind": "custom",
+      "refersTo": "quote-item",
+      "description": "Renglón de libreta: descripción, medidas a la izquierda e importe a la derecha.",
+      "html": "<div class=\"ds-partida\"><div class=\"ds-partida-desc\">Ventana corrediza</div><div class=\"ds-partida-row\"><span class=\"ds-mono\">1.20 m × 1.50 m</span><span class=\"ds-mono ds-importe\">$4,860.00</span></div></div>",
+      "css": ".ds-partida { padding: 12px 0; border-bottom: 1px dashed var(--aluminio, #8C9399); font-family: 'Barlow', sans-serif; color: var(--tinta, #161616); } .ds-partida-desc { font-size: 1rem; font-weight: 500; } .ds-partida-row { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-top: 4px; } .ds-mono { font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; font-size: 1.125rem; } .ds-importe { text-align: right; font-weight: 700; }"
+    },
+    {
+      "name": "Folio",
+      "kind": "custom",
+      "refersTo": "folio-stamp",
+      "description": "Sello rojo con borde doble, rotado -2°.",
+      "html": "<span class=\"ds-folio\">No. 0042</span>",
+      "css": ".ds-folio { display: inline-block; padding: 4px 10px; border: 4px double var(--rojo, #C8372D); border-radius: 4px; color: var(--rojo, #C8372D); font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 1.5rem; letter-spacing: 0.04em; text-transform: uppercase; transform: rotate(-2deg); }"
+    },
+    {
+      "name": "Estado",
+      "kind": "chip",
+      "refersTo": "status-tape",
+      "description": "Etiqueta tipo cinta adhesiva en mayúsculas.",
+      "html": "<span class=\"ds-cinta\">VISTA</span> <span class=\"ds-cinta ds-cinta-ok\">ACEPTADA</span>",
+      "css": ".ds-cinta { display: inline-block; padding: 2px 8px; background: var(--papel-2, #E8E1D3); color: var(--tinta, #161616); border-left: 3px solid var(--tinta, #161616); border-right: 3px solid var(--tinta, #161616); font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1rem; letter-spacing: 0.04em; text-transform: uppercase; transform: rotate(-1deg); } .ds-cinta-ok { border-color: var(--verde, #2F6B3F); }"
+    },
+    {
+      "name": "Regla de cinta métrica",
+      "kind": "custom",
+      "refersTo": "section-rule",
+      "description": "Separador de sección con marcas cada 8 px.",
+      "html": "<div class=\"ds-regla\" role=\"separator\"></div>",
+      "css": ".ds-regla { height: 10px; border-top: 2px solid var(--tinta, #161616); background-image: repeating-linear-gradient(to right, var(--tinta, #161616) 0 1px, transparent 1px 8px); background-size: 100% 6px; background-repeat: no-repeat; }"
+    },
+    {
+      "name": "Total",
+      "kind": "custom",
+      "refersTo": "total",
+      "description": "Línea doble encima, rótulo a la izquierda, monto grande en mono a la derecha.",
+      "html": "<div class=\"ds-total\"><span class=\"ds-total-label\">TOTAL</span><span class=\"ds-total-monto\">$12,480.00</span></div>",
+      "css": ".ds-total { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding-top: 12px; border-top: 6px double var(--tinta, #161616); color: var(--tinta, #161616); } .ds-total-label { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.25rem; letter-spacing: 0.02em; } .ds-total-monto { font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; font-weight: 700; font-size: 1.75rem; text-align: right; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "La Hoja de Obra",
+    "overview": "Cada pantalla es una hoja de obra bien llenada: papel claro, tinta casi negra, renglones de libreta, la cinta métrica y un marcador amarillo que señala lo único que hay que tocar. Nada flota y nada brilla. La interfaz se parece a lo que el maestro ya usa (la libreta, la nota de remisión), pero con el orden y la limpieza que su cliente no ha visto en ninguna otra cotización.\n\nEs una herramienta de trabajo para la obra, no un producto de oficina. Densidad media, un solo flujo a la vez, diseñada primero para 360 px de ancho y para leerse bajo el sol. Los números mandan: medidas, importes y total son lo más grande y lo más legible de la pantalla, alineados a la derecha como en una nota de remisión. El carácter vive en pocos detalles precisos (el folio sellado, la etiqueta de cinta adhesiva, la regla de cinta métrica), no en decoración.",
+    "keyCharacteristics": [
+      "Papel y tinta con contraste de exterior (15.65:1 en texto principal).",
+      "Bordes de 2 px y reglas punteadas en vez de sombras.",
+      "Números en mono tabular, alineados a la derecha.",
+      "Títulos condensados en mayúsculas.",
+      "Un solo amarillo: la acción principal, fija abajo y al alcance del pulgar."
+    ],
+    "rules": [
+      {
+        "name": "La Regla del Marcador",
+        "body": "El amarillo marca una sola cosa por pantalla: la acción principal. Si hay dos cosas amarillas, una sobra.",
+        "section": "colors"
+      },
+      {
+        "name": "La Regla de Exterior",
+        "body": "Todo texto que haya que leer va en tinta o tinta corrida (≥ 7:1). Rojo y verde solo refuerzan; nunca cargan solos el significado ni van en texto corrido.",
+        "section": "colors"
+      },
+      {
+        "name": "La Regla del Número",
+        "body": "Toda medida, cantidad o monto va en mono tabular y alineado a la derecha. Ningún número de dinero en Barlow.",
+        "section": "typography"
+      },
+      {
+        "name": "La Regla del Rótulo",
+        "body": "Barlow Condensed solo en 600–800 y siempre en mayúsculas con 0.02em. Nunca en texto corrido.",
+        "section": "typography"
+      },
+      {
+        "name": "La Regla del Pulgar",
+        "body": "Todo lo que se toca mide al menos 56 px de alto. La acción principal siempre está abajo, al alcance del pulgar.",
+        "section": "layout"
+      },
+      {
+        "name": "La Regla del Papel",
+        "body": "Si algo necesita separarse, lleva una línea, no una sombra. Una hoja no flota.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do usa solo los tokens de src/styles/tokens.css (bg-papel, text-tinta, border-tinta, bg-amarillo…).",
+      "Do pon medidas y dinero en num y alineados a la derecha; centavos con formatCentavos y medidas con formatMetros de src/lib/format.",
+      "Do separa con bordes de 2 px de tinta o reglas punteadas de aluminio.",
+      "Do diseña primero en 360 px, con botones de 56 px y la acción principal fija abajo.",
+      "Do incluye al menos una firma (folio, cinta de estado, regla de cinta métrica) en cada pantalla principal."
+    ],
+    "donts": [
+      "Don't uses gradientes, glassmorphism, blobs ni sombras de ningún tipo.",
+      "Don't redondees más de 4 px ni hagas tarjetas con sombra suave.",
+      "Don't uses la fuente Inter ni emojis en la interfaz.",
+      "Don't pongas texto en aluminio, ni texto corrido en rojo o verde.",
+      "Don't hagas grids de tres features con íconos, heroes con mockup 3D flotante, ilustraciones genéricas de personas ni barras laterales con métricas vacías.",
+      "Don't escribas un color hex suelto en componentes (excepción: ImageResponse y PDF, que no leen CSS; ahí se copian los valores de los tokens)."
+    ]
+  }
+}
