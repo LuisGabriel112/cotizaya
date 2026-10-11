@@ -1,0 +1,24 @@
+# deps
+node_modules/
+
+# next
+.next/
+out/
+build/
+next-env.d.ts
+*.tsbuildinfo
+
+# tests
+test-results/
+playwright-report/
+coverage/
+
+# env
+.env*
+!.env.example
+
+# local
+.claude/settings.local.json
+.vercel
+.DS_Store
+*.log

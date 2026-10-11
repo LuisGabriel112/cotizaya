@@ -1,0 +1,36 @@
+@import "tailwindcss";
+@import "../styles/tokens.css";
+
+/* Título de hoja: Barlow Condensed 700, mayúsculas. */
+@utility titulo {
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+/* Medidas y dinero: mono, tabulares. La alineación la pone quien lo usa. */
+@utility num {
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
+}
+
+@layer base {
+  html {
+    color: var(--tinta);
+    background-color: var(--papel);
+    font-family: var(--font-body);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Textura de papel: ruido SVG al 3 %, solo en el fondo. */
+  body {
+    min-height: 100dvh;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--tinta);
+    outline-offset: 2px;
+  }
+}

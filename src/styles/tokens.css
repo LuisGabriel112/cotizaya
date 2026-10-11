@@ -1,0 +1,46 @@
+/* Hoja de taller: único origen de color, línea, radio y tipografía.
+   Ver .claude/skills/hoja-de-taller. */
+
+:root {
+  --papel: #F3EEE4;
+  --papel-2: #E8E1D3;
+  --tinta: #161616;
+  --tinta-2: #4A4740;
+  --amarillo: #F2C230; /* marcador: acción principal */
+  --rojo: #C8372D;     /* corrección: errores y rechazos */
+  --verde: #2F6B3F;    /* aceptada */
+  --aluminio: #8C9399; /* líneas secundarias */
+  --linea: 2px solid var(--tinta);
+  --regla: 1px dashed var(--aluminio);
+  --radio: 4px;
+}
+
+/* Expuestos a Tailwind. Se apaga todo lo de fábrica: solo existen estos. */
+@theme inline {
+  --color-*: initial;
+  --color-papel: var(--papel);
+  --color-papel-2: var(--papel-2);
+  --color-tinta: var(--tinta);
+  --color-tinta-2: var(--tinta-2);
+  --color-amarillo: var(--amarillo);
+  --color-rojo: var(--rojo);
+  --color-verde: var(--verde);
+  --color-aluminio: var(--aluminio);
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  --radius-*: initial;
+  --radius-sm: var(--radio);
+
+  --shadow-*: initial;
+  --inset-shadow-*: initial;
+  --drop-shadow-*: initial;
+  --text-shadow-*: initial;
+  --blur-*: initial;
+
+  /* Las familias llegan de next/font (src/app/fonts.ts). */
+  --font-*: initial;
+  --font-display: var(--ff-display), "Barlow Condensed", sans-serif; /* 600–800, mayúsculas */
+  --font-body: var(--ff-body), "Barlow", sans-serif;
+  --font-num: var(--ff-num), "JetBrains Mono", monospace; /* medidas y dinero */
+}
