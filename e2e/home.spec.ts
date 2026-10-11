@@ -1,10 +1,10 @@
 import { expect, test } from "@playwright/test";
 
-test("la base carga en español de México", async ({ page }) => {
+test("la entrada lleva a la lista en español de México", async ({ page }) => {
   await page.goto("/");
+  await expect(page).toHaveURL(/\/cotizaciones$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "es-MX");
-  await expect(page.getByRole("heading", { level: 1, name: "Cotiza Ya" })).toBeVisible();
-  await expect(page.getByText("$4,860.00")).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Cotizaciones" })).toBeVisible();
 });
 
 test("es instalable: manifest e íconos responden", async ({ request }) => {

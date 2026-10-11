@@ -1,0 +1,102 @@
+import type { Cotizacion, Taller } from "./tipos";
+
+// Taller y clientes ficticios para el prototipo.
+export const TALLER: Taller = {
+  nombre: "Aluminio y Vidrio El Faro",
+  ciudad: "Boca del Río, Ver.",
+  telefono: "229 000 0000",
+  condiciones: "50 % de anticipo, resto al terminar la instalación.",
+  plan: "gratis",
+};
+
+const p = (
+  id: string,
+  plantillaId: string,
+  descripcion: string,
+  materialId: string,
+  anchoCm: number,
+  altoCm: number,
+  cantidad: number,
+  manoObraCentavos: number,
+) => ({ id, plantillaId, descripcion, materialId, anchoCm, altoCm, cantidad, manoObraCentavos });
+
+export const COTIZACIONES_SEMILLA: Cotizacion[] = [
+  {
+    id: "c42",
+    folio: 42,
+    slug: "faro-0042-k7m2",
+    cliente: "Sra. Leticia Cruz",
+    partidas: [
+      p("c42-1", "corrediza", "Ventana corrediza, recámara", "corrediza-2-6mm", 150, 120, 2, 35_000),
+      p("c42-2", "mosquitero", "Mosquitero", "mosquitero-fibra", 75, 120, 4, 15_000),
+    ],
+    descuentoPct: 0,
+    conIva: false,
+    acabado: "anodizado",
+    garantiaSalitre: true,
+    estado: "vista",
+    creadaEn: "2026-10-10T17:20:00-06:00",
+    vistaEn: "2026-10-11T09:42:00-06:00",
+    avisoPendiente: true,
+  },
+  {
+    id: "c41",
+    folio: 41,
+    slug: "faro-0041-p3qa",
+    cliente: "Constructora Médano",
+    partidas: [
+      p("c41-1", "corrediza", "Ventana corrediza, fachada", "corrediza-2-6mm", 180, 150, 6, 35_000),
+      p("c41-2", "abatible", "Puerta abatible, acceso", "abatible-1-34", 90, 210, 1, 80_000),
+    ],
+    descuentoPct: 5,
+    conIva: true,
+    acabado: "electrostatica",
+    garantiaSalitre: true,
+    estado: "enviada",
+    creadaEn: "2026-10-09T12:05:00-06:00",
+  },
+  {
+    id: "c40",
+    folio: 40,
+    slug: "faro-0040-x9re",
+    cliente: "Don Ramiro Huesca",
+    partidas: [p("c40-1", "cancel", "Cancel de baño", "cancel-templado", 120, 190, 1, 60_000)],
+    descuentoPct: 0,
+    conIva: false,
+    acabado: "natural",
+    garantiaSalitre: false,
+    estado: "aceptada",
+    creadaEn: "2026-10-07T10:30:00-06:00",
+    vistaEn: "2026-10-07T13:10:00-06:00",
+  },
+  {
+    id: "c39",
+    folio: 39,
+    slug: "faro-0039-b2wn",
+    cliente: "Farmacia La Playa",
+    partidas: [
+      p("c39-1", "felpa", "Cambio de felpa y rodamientos", "felpa-rodamientos", 0, 0, 8, 25_000),
+      p("c39-2", "corrosion", "Reemplazo de perfil por corrosión", "perfil-corrosion", 200, 220, 1, 40_000),
+    ],
+    descuentoPct: 0,
+    conIva: true,
+    acabado: "natural",
+    garantiaSalitre: true,
+    estado: "rechazada",
+    creadaEn: "2026-10-05T16:45:00-06:00",
+    vistaEn: "2026-10-06T08:15:00-06:00",
+  },
+  {
+    id: "c38",
+    folio: 38,
+    slug: "faro-0038-h4tz",
+    cliente: "",
+    partidas: [p("c38-1", "mosquitero", "Mosquitero", "mosquitero-fibra", 60, 90, 3, 15_000)],
+    descuentoPct: 0,
+    conIva: false,
+    acabado: "natural",
+    garantiaSalitre: false,
+    estado: "borrador",
+    creadaEn: "2026-10-04T11:00:00-06:00",
+  },
+];

@@ -18,6 +18,37 @@ export function formatCentavos(centavos: number): string {
   return dinero.format(centavos / 100);
 }
 
+/** 42 → "0042". */
+export function formatFolio(folio: number): string {
+  return String(folio).padStart(4, "0");
+}
+
+const fechaCorta = new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "short", timeZone: "America/Mexico_City" });
+const hora = new Intl.DateTimeFormat("es-MX", { hour: "numeric", minute: "2-digit", timeZone: "America/Mexico_City" });
+
+/** ISO → "11 oct". */
+export function formatFecha(iso: string): string {
+  return fechaCorta.format(new Date(iso)).replace(".", "");
+}
+
+/** ISO → "9:42 a.m." */
+export function formatHora(iso: string): string {
+  return hora.format(new Date(iso));
+}
+
+/** Medidas de una partida según su unidad: "1.20 × 1.50 m ×2" o "8 pzas". */
+export function formatMedidas(
+  anchoCm: number,
+  altoCm: number,
+  unidad: "m2" | "ml" | "pieza",
+  cantidad: number,
+  pieza: readonly [string, string] = ["pza", "pzas"],
+): string {
+  if (unidad === "pieza") return `${cantidad} ${cantidad === 1 ? pieza[0] : pieza[1]}`;
+  const medidas = `${metros.format(anchoCm / 100)} × ${metros.format(altoCm / 100)} m`;
+  return cantidad > 1 ? `${medidas} ×${cantidad}` : medidas;
+}
+
 /** 120 → "1.20 m". Las medidas se guardan en cm y se muestran en m. */
 export function formatMetros(cm: number): string {
   if (!Number.isFinite(cm)) {

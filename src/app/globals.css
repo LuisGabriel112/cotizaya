@@ -15,12 +15,61 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* Regla de cinta métrica: marcas cada 8 px y marca larga cada 80 px. */
+@utility regla-cinta {
+  height: 12px;
+  border-top: var(--linea);
+  background-image:
+    repeating-linear-gradient(to right, var(--tinta) 0 2px, transparent 2px 80px),
+    repeating-linear-gradient(to right, var(--tinta) 0 1px, transparent 1px 8px);
+  background-size: 100% 10px, 100% 5px;
+  background-repeat: no-repeat;
+}
+
+/* Una respuesta cae a la hoja como renglón. */
+@keyframes caer {
+  from {
+    transform: translateY(-10px);
+    opacity: 0.2;
+  }
+}
+
 @layer base {
   html {
     color: var(--tinta);
     background-color: var(--papel);
     font-family: var(--font-body);
+    font-size: 100%;
     -webkit-tap-highlight-color: transparent;
+    caret-color: var(--tinta);
+    scrollbar-color: var(--tinta-2) var(--papel-2);
+  }
+
+  body {
+    font-size: 1.125rem;
+    line-height: 1.5;
+  }
+
+  ::selection {
+    background-color: var(--amarillo);
+    color: var(--tinta);
+  }
+
+  button,
+  [role="button"],
+  summary {
+    cursor: pointer;
+  }
+
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  a {
+    text-underline-offset: 0.2em;
+    text-decoration-thickness: 2px;
   }
 
   /* Textura de papel: ruido SVG al 3 %, solo en el fondo. */

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-11T16:42:20.280Z",
+  "generatedAt": "2026-10-11T17:23:09.424Z",
   "title": "Design System: Cotiza Ya",
   "extensions": {
     "colorMeta": {
@@ -126,13 +126,17 @@
       }
     },
     "typographyMeta": {
+      "question": {
+        "displayName": "Pregunta",
+        "purpose": "La pregunta en curso de la captura. Una a la vez; supera al nombre de pantalla."
+      },
       "display": {
         "displayName": "Rótulo",
-        "purpose": "Nombre de pantalla, uno por pantalla. Barlow Condensed 700 en mayúsculas."
+        "purpose": "Nombre de pantalla en el encabezado, uno por pantalla. Barlow Condensed 700 en mayúsculas."
       },
       "title": {
         "displayName": "Encabezado",
-        "purpose": "Secciones, botones, etiqueta TOTAL y estados. Mayúsculas."
+        "purpose": "Botones, secciones, estados y avisos. Mayúsculas. El rótulo TOTAL sube a 1.5rem."
       },
       "body": {
         "displayName": "Texto",
@@ -144,15 +148,35 @@
       },
       "number": {
         "displayName": "Medida",
-        "purpose": "Medidas, cantidades e importes en mono tabular, alineados a la derecha."
+        "purpose": "Medidas y cantidades en mono tabular a la derecha; importes por partida en 700."
+      },
+      "field": {
+        "displayName": "Campo vivo",
+        "purpose": "El número que se teclea en la captura: el más grande mientras se escribe."
       },
       "total": {
         "displayName": "Total",
-        "purpose": "Total de la cotización. El número más grande de la pantalla."
+        "purpose": "Monto del TOTAL. El número más grande fuera de la captura de una medida."
       }
     },
     "shadows": [],
-    "motion": [],
+    "motion": [
+      {
+        "name": "caer",
+        "value": "@keyframes caer { from { transform: translateY(-10px); opacity: 0.2; } } 220ms cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Único momento con autor: el renglón nuevo cae a la hoja. Solo con motion-safe (prefers-reduced-motion: no-preference)."
+      },
+      {
+        "name": "ease-caer",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Curva de salida rápida de caer."
+      },
+      {
+        "name": "presionar",
+        "value": "transform: translateY(2px); transition: transform 75ms",
+        "purpose": "Respuesta al toque en botones y fichas: lo presionado baja 2 px."
+      }
+    ],
     "breakpoints": [
       {
         "name": "base",
@@ -162,6 +186,16 @@
         "name": "contenido-max",
         "value": "448px"
       }
+    ],
+    "touchTarget": {
+      "min": "56px",
+      "purpose": "Todo lo tocable mide al menos 56 px (min-h-14); campo de número y fichas de plantilla, 80 px."
+    },
+    "hexExceptions": [
+      "src/app/manifest.ts (theme_color, background_color)",
+      "src/app/layout.tsx (viewport themeColor)",
+      "src/app/icons/marca.tsx (ImageResponse)",
+      "PDF con @react-pdf/renderer (fase 4)"
     ]
   },
   "components": [
@@ -169,76 +203,85 @@
       "name": "Botón principal",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "Acción principal de la pantalla. Una sola, fija abajo en móvil.",
-      "html": "<button class=\"ds-btn-primary\">ENVIAR POR WHATSAPP</button>",
-      "css": ".ds-btn-primary { background: var(--amarillo, #F2C230); color: var(--tinta, #161616); height: 56px; width: 100%; padding: 0 24px; border: 2px solid var(--tinta, #161616); border-radius: 4px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.25rem; letter-spacing: 0.02em; text-transform: uppercase; cursor: pointer; } .ds-btn-primary:hover { border-width: 3px; } .ds-btn-primary:active { border-width: 4px; } .ds-btn-primary:focus-visible { outline: 3px solid var(--tinta, #161616); outline-offset: 2px; }"
+      "description": "Acción principal de la pantalla: amarillo, 56 px, una sola, dentro de la barra de acción.",
+      "html": "<button class=\"ds-btn-principal\">SIGUIENTE: ALTO</button>",
+      "css": ".ds-btn-principal { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 56px; width: 100%; padding: 0 24px; background: var(--amarillo, #F2C230); color: var(--tinta, #161616); border: 2px solid var(--tinta, #161616); border-radius: 4px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em; font-size: 1.25rem; line-height: 1; cursor: pointer; transition: transform 75ms; } .ds-btn-principal:active { transform: translateY(2px); } .ds-btn-principal:focus-visible { outline: 3px solid var(--tinta, #161616); outline-offset: 2px; } .ds-btn-principal:disabled { background: var(--papel-2, #E8E1D3); color: var(--tinta-2, #4A4740); border-color: var(--tinta-2, #4A4740); cursor: not-allowed; transform: none; }"
     },
     {
       "name": "Botón secundario",
       "kind": "button",
       "refersTo": "button-secondary",
-      "description": "Acciones secundarias: papel con borde de tinta.",
-      "html": "<button class=\"ds-btn-secondary\">AGREGAR PARTIDA</button>",
-      "css": ".ds-btn-secondary { background: var(--papel, #F3EEE4); color: var(--tinta, #161616); height: 56px; padding: 0 24px; border: 2px solid var(--tinta, #161616); border-radius: 4px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.25rem; letter-spacing: 0.02em; text-transform: uppercase; cursor: pointer; } .ds-btn-secondary:hover, .ds-btn-secondary:active { background: var(--papel-2, #E8E1D3); } .ds-btn-secondary:focus-visible { outline: 3px solid var(--tinta, #161616); outline-offset: 2px; }"
+      "description": "Acción secundaria: papel con borde de tinta; al presionar, papel viejo.",
+      "html": "<button class=\"ds-btn-secundario\">ABRIR WHATSAPP</button>",
+      "css": ".ds-btn-secundario { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 56px; width: 100%; padding: 0 24px; background: var(--papel, #F3EEE4); color: var(--tinta, #161616); border: 2px solid var(--tinta, #161616); border-radius: 4px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em; font-size: 1.25rem; line-height: 1; cursor: pointer; transition: transform 75ms; } .ds-btn-secundario:active { transform: translateY(2px); } .ds-btn-secundario:focus-visible { outline: 3px solid var(--tinta, #161616); outline-offset: 2px; } .ds-btn-secundario:disabled { background: var(--papel-2, #E8E1D3); color: var(--tinta-2, #4A4740); border-color: var(--tinta-2, #4A4740); cursor: not-allowed; transform: none; } .ds-btn-secundario:active { background: var(--papel-2, #E8E1D3); }"
     },
     {
-      "name": "Campo de medida",
+      "name": "Barra de acción",
+      "kind": "nav",
+      "refersTo": "action-bar",
+      "description": "Acción principal fija abajo, borde superior de 2 px de tinta, área segura respetada.",
+      "html": "<div class=\"ds-barra\"><button class=\"ds-barra-btn\">VER COTIZACIÓN</button></div>",
+      "css": ".ds-barra { background: var(--papel, #F3EEE4); border-top: 2px solid var(--tinta, #161616); padding: 12px 16px max(12px, env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 8px; } .ds-barra-btn { min-height: 56px; width: 100%; background: var(--amarillo, #F2C230); color: var(--tinta, #161616); border: 2px solid var(--tinta, #161616); border-radius: 4px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em; font-size: 1.25rem; line-height: 1; cursor: pointer; transition: transform 75ms; } .ds-barra-btn:active { transform: translateY(2px); } .ds-barra-btn:focus-visible { outline: 3px solid var(--tinta, #161616); outline-offset: 2px; }"
+    },
+    {
+      "name": "Pregunta con campo de número",
       "kind": "input",
-      "refersTo": "input",
-      "description": "Captura de medidas y precios: mono, a la derecha, con unidad visible.",
-      "html": "<label class=\"ds-field\"><span class=\"ds-field-label\">Ancho</span><span class=\"ds-field-box\"><input class=\"ds-input\" inputmode=\"decimal\" value=\"120\"><span class=\"ds-unit\">cm</span></span></label>",
-      "css": ".ds-field { display: flex; flex-direction: column; gap: 4px; font-family: 'Barlow', sans-serif; color: var(--tinta, #161616); } .ds-field-label { font-weight: 500; font-size: 1rem; } .ds-field-box { display: flex; align-items: center; height: 56px; border: 2px solid var(--tinta, #161616); border-radius: 4px; background: var(--papel, #F3EEE4); padding: 0 16px; gap: 8px; } .ds-field-box:focus-within { outline: 3px solid var(--tinta, #161616); outline-offset: 2px; } .ds-input { flex: 1; min-width: 0; border: 0; background: transparent; text-align: right; font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; font-size: 1.125rem; color: inherit; outline: none; } .ds-unit { font-family: 'JetBrains Mono', monospace; color: var(--tinta-2, #4A4740); }"
+      "refersTo": "field-number",
+      "description": "Una sola pregunta en rótulo de 2.5rem; campo de 80 px con el número en mono 3rem a la derecha y la unidad visible.",
+      "html": "<div class=\"ds-preg\"><div class=\"ds-preg-top\"><h2 class=\"ds-preg-t\">¿ANCHO?</h2><button class=\"ds-preg-x\">Cancelar</button></div><p class=\"ds-preg-d\"><svg viewBox=\"0 0 48 40\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"square\" aria-hidden=\"true\"><rect x=\"3\" y=\"5\" width=\"42\" height=\"30\"/><path d=\"M22 8v24M26 8v24M22 8h-16v24h16M26 8h16v24h-16\"/><path d=\"M9 20h8M14 17l3 3-3 3\"/></svg>Ventana corrediza</p><label class=\"ds-campo\"><input class=\"ds-campo-in\" inputmode=\"numeric\" value=\"120\" aria-label=\"Ancho en centímetros\"><span class=\"ds-campo-u\">cm</span></label></div>",
+      "css": ".ds-preg { color: var(--tinta, #161616); font-family: 'Barlow', sans-serif; border-top: 2px solid var(--tinta, #161616); padding-top: 16px; } .ds-preg-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; } .ds-preg-t { margin: 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em; font-size: 2.5rem; line-height: 1; } .ds-preg-x { min-height: 56px; padding: 0 8px; background: none; border: 0; color: var(--tinta-2, #4A4740); font: inherit; font-size: 1rem; text-decoration: underline; cursor: pointer; } .ds-preg-d { display: flex; align-items: center; gap: 8px; margin: 4px 0 16px; font-size: 1.125rem; } .ds-preg-d svg { width: 28px; height: 24px; } .ds-campo { display: flex; align-items: center; gap: 12px; height: 80px; padding: 0 16px; background: var(--papel, #F3EEE4); border: 2px solid var(--tinta, #161616); border-radius: 4px; } .ds-campo:focus-within { outline: 3px solid var(--tinta, #161616); outline-offset: 2px; } .ds-campo-in { font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; flex: 1; min-width: 0; border: 0; background: transparent; outline: none; text-align: right; font-size: 3rem; font-weight: 700; color: inherit; } .ds-campo-u { font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; font-size: 1.5rem; color: var(--tinta-2, #4A4740); }"
+    },
+    {
+      "name": "Ficha de plantilla y extras",
+      "kind": "chip",
+      "refersTo": "template-ficha",
+      "description": "Ficha de 80 px con croquis; extra de 56 px con borde punteado que se vuelve sólido al presionarse.",
+      "html": "<div class=\"ds-fichas\"><button class=\"ds-ficha\"><svg viewBox=\"0 0 48 40\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"square\" aria-hidden=\"true\"><rect x=\"3\" y=\"5\" width=\"42\" height=\"30\"/><path d=\"M22 8v24M26 8v24M22 8h-16v24h16M26 8h16v24h-16\"/><path d=\"M9 20h8M14 17l3 3-3 3\"/></svg><span><span class=\"ds-ficha-n\">VENTANA CORREDIZA</span><span class=\"ds-ficha-p\">$1,850 m²</span></span></button><button class=\"ds-extra\" aria-pressed=\"false\"><span class=\"ds-extra-e\">Cliente</span><span class=\"ds-extra-v\">Sin nombre</span></button><button class=\"ds-extra\" aria-pressed=\"true\"><span class=\"ds-extra-e\">IVA</span><span class=\"ds-extra-v\">Con IVA</span></button></div>",
+      "css": ".ds-fichas { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-family: 'Barlow', sans-serif; color: var(--tinta, #161616); } .ds-ficha { grid-column: span 2; display: flex; align-items: center; gap: 8px; min-height: 80px; padding: 8px; background: var(--papel, #F3EEE4); color: var(--tinta, #161616); border: 2px solid var(--tinta, #161616); border-radius: 4px; text-align: left; cursor: pointer; transition: transform 75ms; } .ds-ficha:active { transform: translateY(2px); background: var(--papel-2, #E8E1D3); } .ds-ficha:focus-visible, .ds-extra:focus-visible { outline: 3px solid var(--tinta, #161616); outline-offset: 2px; } .ds-ficha svg { width: 36px; height: 32px; flex-shrink: 0; } .ds-ficha > span { display: flex; flex-direction: column; } .ds-ficha-n { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em; font-size: 1.125rem; line-height: 1.25; } .ds-ficha-p { font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; font-size: 1rem; color: var(--tinta-2, #4A4740); } .ds-extra { display: flex; flex-direction: column; justify-content: center; min-height: 56px; padding: 4px 12px; background: var(--papel, #F3EEE4); color: var(--tinta, #161616); border: 2px dashed var(--tinta-2, #4A4740); border-radius: 4px; text-align: left; font: inherit; cursor: pointer; } .ds-extra:active { background: var(--papel-2, #E8E1D3); } .ds-extra[aria-pressed=\"true\"] { border-style: solid; border-color: var(--tinta, #161616); background: var(--papel-2, #E8E1D3); } .ds-extra-e { font-size: 1rem; line-height: 1.25; color: var(--tinta-2, #4A4740); } .ds-extra-v { font-weight: 600; }"
     },
     {
       "name": "Partida",
       "kind": "custom",
       "refersTo": "quote-item",
-      "description": "Renglón de libreta: descripción, medidas a la izquierda e importe a la derecha.",
-      "html": "<div class=\"ds-partida\"><div class=\"ds-partida-desc\">Ventana corrediza</div><div class=\"ds-partida-row\"><span class=\"ds-mono\">1.20 m × 1.50 m</span><span class=\"ds-mono ds-importe\">$4,860.00</span></div></div>",
-      "css": ".ds-partida { padding: 12px 0; border-bottom: 1px dashed var(--aluminio, #8C9399); font-family: 'Barlow', sans-serif; color: var(--tinta, #161616); } .ds-partida-desc { font-size: 1rem; font-weight: 500; } .ds-partida-row { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-top: 4px; } .ds-mono { font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; font-size: 1.125rem; } .ds-importe { text-align: right; font-weight: 700; }"
-    },
-    {
-      "name": "Folio",
-      "kind": "custom",
-      "refersTo": "folio-stamp",
-      "description": "Sello rojo con borde doble, rotado -2°.",
-      "html": "<span class=\"ds-folio\">No. 0042</span>",
-      "css": ".ds-folio { display: inline-block; padding: 4px 10px; border: 4px double var(--rojo, #C8372D); border-radius: 4px; color: var(--rojo, #C8372D); font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 1.5rem; letter-spacing: 0.04em; text-transform: uppercase; transform: rotate(-2deg); }"
-    },
-    {
-      "name": "Estado",
-      "kind": "chip",
-      "refersTo": "status-tape",
-      "description": "Etiqueta tipo cinta adhesiva en mayúsculas.",
-      "html": "<span class=\"ds-cinta\">VISTA</span> <span class=\"ds-cinta ds-cinta-ok\">ACEPTADA</span>",
-      "css": ".ds-cinta { display: inline-block; padding: 2px 8px; background: var(--papel-2, #E8E1D3); color: var(--tinta, #161616); border-left: 3px solid var(--tinta, #161616); border-right: 3px solid var(--tinta, #161616); font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1rem; letter-spacing: 0.04em; text-transform: uppercase; transform: rotate(-1deg); } .ds-cinta-ok { border-color: var(--verde, #2F6B3F); }"
-    },
-    {
-      "name": "Regla de cinta métrica",
-      "kind": "custom",
-      "refersTo": "section-rule",
-      "description": "Separador de sección con marcas cada 8 px.",
-      "html": "<div class=\"ds-regla\" role=\"separator\"></div>",
-      "css": ".ds-regla { height: 10px; border-top: 2px solid var(--tinta, #161616); background-image: repeating-linear-gradient(to right, var(--tinta, #161616) 0 1px, transparent 1px 8px); background-size: 100% 6px; background-repeat: no-repeat; }"
+      "description": "Renglón de libreta con croquis; la partida en curso va en papel viejo con medidas a medias.",
+      "html": "<div class=\"ds-partida\"><div class=\"ds-partida-d\"><svg viewBox=\"0 0 48 40\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"square\" aria-hidden=\"true\"><rect x=\"3\" y=\"5\" width=\"42\" height=\"30\"/><path d=\"M22 8v24M26 8v24M22 8h-16v24h16M26 8h16v24h-16\"/><path d=\"M9 20h8M14 17l3 3-3 3\"/></svg>Ventana corrediza</div><div class=\"ds-partida-r\"><span class=\"ds-partida-m\">1.20 × 1.50 m</span><span class=\"ds-partida-i\">$3,330.00</span></div></div><div class=\"ds-partida ds-partida-curso\"><div class=\"ds-partida-d\"><svg viewBox=\"0 0 48 40\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"square\" aria-hidden=\"true\"><rect x=\"3\" y=\"5\" width=\"42\" height=\"30\"/><path d=\"M22 8v24M26 8v24M22 8h-16v24h16M26 8h16v24h-16\"/><path d=\"M9 20h8M14 17l3 3-3 3\"/></svg>Ventana corrediza</div><div class=\"ds-partida-r\"><span class=\"ds-partida-m\">1.20 × ? m</span><span class=\"ds-partida-m\">—</span></div></div>",
+      "css": ".ds-partida { display: flex; flex-direction: column; gap: 2px; padding: 12px 0; border-bottom: 1px dashed var(--aluminio, #8C9399); font-family: 'Barlow', sans-serif; color: var(--tinta, #161616); animation: ds-caer 220ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-partida-curso { background: var(--papel-2, #E8E1D3); } .ds-partida-d { display: flex; align-items: center; gap: 8px; font-weight: 500; } .ds-partida-d svg { width: 24px; height: 20px; } .ds-partida-r { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; } .ds-partida-m { font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; color: var(--tinta-2, #4A4740); } .ds-partida-i { font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; font-weight: 700; text-align: right; } @keyframes ds-caer { from { transform: translateY(-10px); opacity: 0.2; } } @media (prefers-reduced-motion: reduce) { .ds-partida { animation: none; } }"
     },
     {
       "name": "Total",
       "kind": "custom",
       "refersTo": "total",
-      "description": "Línea doble encima, rótulo a la izquierda, monto grande en mono a la derecha.",
-      "html": "<div class=\"ds-total\"><span class=\"ds-total-label\">TOTAL</span><span class=\"ds-total-monto\">$12,480.00</span></div>",
-      "css": ".ds-total { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding-top: 12px; border-top: 6px double var(--tinta, #161616); color: var(--tinta, #161616); } .ds-total-label { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.25rem; letter-spacing: 0.02em; } .ds-total-monto { font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; font-weight: 700; font-size: 1.75rem; text-align: right; }"
+      "description": "Línea doble de 6 px, rótulo TOTAL de 1.5rem y monto en mono 700 de 2rem.",
+      "html": "<div class=\"ds-total\"><span class=\"ds-total-r\">TOTAL</span><span class=\"ds-total-m\">$6,660.00</span></div>",
+      "css": ".ds-total { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding-top: 8px; border-top: 6px double var(--tinta, #161616); color: var(--tinta, #161616); } .ds-total-r { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em; font-size: 1.5rem; } .ds-total-m { font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; font-weight: 700; font-size: 2rem; line-height: 1.25; text-align: right; }"
+    },
+    {
+      "name": "Folio y cintas de estado",
+      "kind": "chip",
+      "refersTo": "status-tape",
+      "description": "Sello rojo de folio rotado −2° y cintas de estado: punteada en borrador, 3 px verde o rojo al cerrar.",
+      "html": "<div class=\"ds-sellos\"><span class=\"ds-folio\">NO. <span class=\"ds-folio-n\">0043</span></span><span class=\"ds-cinta ds-cinta-borrador\">BORRADOR</span><span class=\"ds-cinta\">VISTA</span><span class=\"ds-cinta ds-cinta-ok\">ACEPTADA</span><span class=\"ds-cinta ds-cinta-no\">RECHAZADA</span></div>",
+      "css": ".ds-sellos { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; } .ds-folio { display: inline-block; padding: 2px 10px; border: 4px double var(--rojo, #C8372D); border-radius: 4px; color: var(--rojo, #C8372D); font-family: 'Barlow Condensed', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em; font-weight: 800; font-size: 1.5rem; white-space: nowrap; transform: rotate(-2deg); } .ds-folio-n { font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; font-weight: 700; } .ds-cinta { display: inline-block; padding: 1px 8px; background: var(--papel-2, #E8E1D3); color: var(--tinta, #161616); border: 2px solid var(--tinta, #161616); font-family: 'Barlow Condensed', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em; font-size: 1rem; line-height: 1.25; transform: rotate(-1deg); } .ds-cinta-borrador { border-style: dashed; border-color: var(--tinta-2, #4A4740); } .ds-cinta-ok { border: 3px solid var(--verde, #2F6B3F); } .ds-cinta-no { border: 3px solid var(--rojo, #C8372D); }"
+    },
+    {
+      "name": "Regla de cinta métrica",
+      "kind": "custom",
+      "refersTo": "section-rule",
+      "description": "Separador de sección: línea de 2 px, marcas cada 8 px y marca larga cada 80 px.",
+      "html": "<div class=\"ds-regla\" role=\"separator\"></div>",
+      "css": ".ds-regla { height: 12px; border-top: 2px solid var(--tinta, #161616); background-image: repeating-linear-gradient(to right, var(--tinta, #161616) 0 2px, transparent 2px 80px), repeating-linear-gradient(to right, var(--tinta, #161616) 0 1px, transparent 1px 8px); background-size: 100% 10px, 100% 5px; background-repeat: no-repeat; }"
     }
   ],
   "narrative": {
     "northStar": "La Hoja de Obra",
-    "overview": "Cada pantalla es una hoja de obra bien llenada: papel claro, tinta casi negra, renglones de libreta, la cinta métrica y un marcador amarillo que señala lo único que hay que tocar. Nada flota y nada brilla. La interfaz se parece a lo que el maestro ya usa (la libreta, la nota de remisión), pero con el orden y la limpieza que su cliente no ha visto en ninguna otra cotización.\n\nEs una herramienta de trabajo para la obra, no un producto de oficina. Densidad media, un solo flujo a la vez, diseñada primero para 360 px de ancho y para leerse bajo el sol. Los números mandan: medidas, importes y total son lo más grande y lo más legible de la pantalla, alineados a la derecha como en una nota de remisión. El carácter vive en pocos detalles precisos (el folio sellado, la etiqueta de cinta adhesiva, la regla de cinta métrica), no en decoración.",
+    "overview": "Cada pantalla es una hoja de obra bien llenada: papel claro, tinta casi negra, renglones de libreta, la cinta métrica y un marcador amarillo que señala lo único que hay que tocar. Nada flota y nada brilla. La interfaz se parece a lo que el maestro ya usa (la libreta, la nota de remisión), pero con el orden y la limpieza que su cliente no ha visto en ninguna otra cotización.\n\nEs una herramienta de trabajo para la obra, no un producto de oficina. Densidad media, un solo flujo a la vez, diseñada primero para 360 px de ancho y para leerse bajo el sol. Los números mandan: medidas, importes y total son lo más legible de la pantalla, en mono y alineados a la derecha como en una nota de remisión. En la captura manda la señalética: la única pregunta del momento es el rótulo más grande y, mientras se teclea una medida, ese número es el más grande; fuera de eso, el TOTAL es el número más grande. El carácter vive en pocos detalles precisos (el folio sellado, la etiqueta de cinta adhesiva, la regla de cinta métrica, el croquis de línea de cada trabajo), no en decoración.",
     "keyCharacteristics": [
       "Papel y tinta con contraste de exterior (15.65:1 en texto principal).",
       "Bordes de 2 px y reglas punteadas en vez de sombras.",
       "Números en mono tabular, alineados a la derecha.",
       "Títulos condensados en mayúsculas.",
-      "Un solo amarillo: la acción principal, fija abajo y al alcance del pulgar."
+      "Un solo amarillo: la acción principal, fija abajo y al alcance del pulgar.",
+      "Una pregunta a la vez en la captura; cada respuesta cae a la hoja como renglón."
     ],
     "rules": [
       {
@@ -257,18 +300,28 @@
         "section": "typography"
       },
       {
+        "name": "La Regla de la Señalética",
+        "body": "En pantallas de captura, la única pregunta en curso es el rótulo más grande (por encima del nombre de pantalla) y, mientras se teclea una medida, el campo vivo es el número más grande. En todo lo demás, el TOTAL es el número más grande de la pantalla. Nunca hay dos preguntas grandes a la vez.",
+        "section": "typography"
+      },
+      {
         "name": "La Regla del Rótulo",
         "body": "Barlow Condensed solo en 600–800 y siempre en mayúsculas con 0.02em. Nunca en texto corrido.",
         "section": "typography"
       },
       {
         "name": "La Regla del Pulgar",
-        "body": "Todo lo que se toca mide al menos 56 px de alto. La acción principal siempre está abajo, al alcance del pulgar.",
+        "body": "Todo lo que se toca mide al menos 56 px de alto, incluidos enlaces de texto, el regreso del encabezado y las celdas del contador. La acción principal siempre está abajo, al alcance del pulgar.",
         "section": "layout"
       },
       {
         "name": "La Regla del Papel",
         "body": "Si algo necesita separarse, lleva una línea, no una sombra. Una hoja no flota.",
+        "section": "elevation"
+      },
+      {
+        "name": "La Regla de la Caída",
+        "body": "Lo único que se anima es una respuesta que cae a la hoja como renglón. Ningún otro elemento entra, se desvanece ni rebota.",
         "section": "elevation"
       }
     ],
@@ -276,16 +329,18 @@
       "Do usa solo los tokens de src/styles/tokens.css (bg-papel, text-tinta, border-tinta, bg-amarillo…).",
       "Do pon medidas y dinero en num y alineados a la derecha; centavos con formatCentavos y medidas con formatMetros de src/lib/format.",
       "Do separa con bordes de 2 px de tinta o reglas punteadas de aluminio.",
-      "Do diseña primero en 360 px, con botones de 56 px y la acción principal fija abajo.",
-      "Do incluye al menos una firma (folio, cinta de estado, regla de cinta métrica) en cada pantalla principal."
+      "Do diseña primero en 360 px, con todo lo tocable de al menos 56 px (min-h-14) y la acción principal fija abajo.",
+      "Do incluye al menos una firma (folio, cinta de estado, regla de cinta métrica) en cada pantalla principal.",
+      "Do en captura, muestra una sola pregunta en rótulo de 2.5rem y deja que el campo vivo sea el número más grande.",
+      "Do limita el movimiento a caer (solo con motion-safe) y al hundido de 2 px al presionar."
     ],
     "donts": [
-      "Don't uses gradientes, glassmorphism, blobs ni sombras de ningún tipo.",
+      "Don't uses degradados de color, glassmorphism, blobs ni sombras de ningún tipo. (Las marcas de la regla de cinta se dibujan con gradientes de corte duro; son trazo, no degradado.)",
       "Don't redondees más de 4 px ni hagas tarjetas con sombra suave.",
       "Don't uses la fuente Inter ni emojis en la interfaz.",
       "Don't pongas texto en aluminio, ni texto corrido en rojo o verde.",
       "Don't hagas grids de tres features con íconos, heroes con mockup 3D flotante, ilustraciones genéricas de personas ni barras laterales con métricas vacías.",
-      "Don't escribas un color hex suelto en componentes (excepción: ImageResponse y PDF, que no leen CSS; ahí se copian los valores de los tokens)."
+      "Don't escribas un color hex suelto en componentes. Excepciones, porque no leen CSS: metadatos del manifest y del viewport (theme_color, background_color, themeColor), íconos generados con ImageResponse y el PDF; ahí se copian los valores de los tokens."
     ]
   }
 }

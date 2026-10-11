@@ -1,5 +1,31 @@
 import { describe, expect, it } from "vitest";
-import { formatCentavos, formatMetros } from "./index";
+import { formatCentavos, formatFecha, formatFolio, formatMedidas, formatMetros } from "./index";
+
+describe("formatFolio", () => {
+  it("rellena a 4 dígitos", () => {
+    expect(formatFolio(42)).toBe("0042");
+    expect(formatFolio(12345)).toBe("12345");
+  });
+});
+
+describe("formatMedidas", () => {
+  it("ancho × alto en metros, con cantidad cuando es más de una", () => {
+    expect(formatMedidas(120, 150, "m2", 1)).toBe("1.20 × 1.50 m");
+    expect(formatMedidas(75, 120, "ml", 4)).toBe("0.75 × 1.20 m ×4");
+  });
+
+  it("por pieza solo dice cuántas", () => {
+    expect(formatMedidas(0, 0, "pieza", 1)).toBe("1 pza");
+    expect(formatMedidas(0, 0, "pieza", 8)).toBe("8 pzas");
+    expect(formatMedidas(0, 0, "pieza", 4, ["hoja", "hojas"])).toBe("4 hojas");
+  });
+});
+
+describe("formatFecha", () => {
+  it("día y mes corto en hora de México", () => {
+    expect(formatFecha("2026-10-11T09:42:00-06:00")).toBe("11 oct");
+  });
+});
 
 describe("formatCentavos", () => {
   it("formatea cero", () => {
