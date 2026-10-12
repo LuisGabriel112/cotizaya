@@ -28,6 +28,8 @@ Antes de dar una pantalla por terminada
 Skill revision-anti-ia.
 npx impeccable detect src/ sin hallazgos nuevos.
 Comandos
-pnpm dev | pnpm test | pnpm test:e2e | pnpm typecheck | supabase db reset
+pnpm dev | pnpm test | pnpm test:e2e | pnpm typecheck
+pnpm db:migrar (aplica supabase/migrations con SUPABASE_DB_URL) | pnpm db:admin <celular> | PGPORT=… pnpm db:test-local (Postgres local con stub, para tests de RLS sin Docker)
+El prototipo sin login vive en /demo; la app real requiere .env.local (ver .env.example).
 Flujo
 Trabaja una fase a la vez. Empieza en modo plan. Al terminar, corre test y typecheck, y resume qué cambió.

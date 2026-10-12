@@ -10,7 +10,10 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "db:migrar": "node supabase/scripts/migrar.ts",
+    "db:admin": "node supabase/scripts/hacer-admin.ts",
+    "db:test-local": "sh supabase/tests/preparar-local.sh"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",

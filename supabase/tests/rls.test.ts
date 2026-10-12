@@ -11,6 +11,7 @@ import {
   crearUsuario,
   type Dueno,
 } from "./pg-sesion";
+import { opcionesSsl } from "../scripts/migraciones";
 
 // Corre contra la base real de Supabase, dentro de una transacción que siempre se revierte.
 const url = process.env.SUPABASE_DB_URL;
@@ -24,9 +25,7 @@ function nuevoDueno(): Dueno {
 }
 
 function nuevaConexion(): Client {
-  // La base local de prueba (stub-local.sql) no usa SSL; la de Supabase sí.
-  const local = /@(localhost|127\.0\.0\.1)[:/]/.test(url ?? "");
-  return new Client({ connectionString: url, ssl: local ? false : { rejectUnauthorized: false } });
+  return new Client({ connectionString: url, ssl: opcionesSsl(url ?? "") });
 }
 
 async function agregarPartida(db: Client, tallerId: string, quoteId: string): Promise<void> {
