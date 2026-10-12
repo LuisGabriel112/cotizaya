@@ -9,7 +9,3 @@ export const CATALOGO: Material[] = [
   { id: "felpa-rodamientos", nombre: "Felpa y rodamientos, por hoja", linea: "Mantenimiento", unidad: "pieza", precioCentavos: 18_000, pieza: ["hoja", "hojas"] },
   { id: "perfil-corrosion", nombre: "Perfil de reemplazo por corrosión", linea: "Reparación", unidad: "ml", precioCentavos: 21_000 },
 ];
-
-export function materialPorId(id: string): Material | undefined {
-  return CATALOGO.find((m) => m.id === id);
-}

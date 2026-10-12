@@ -1,6 +1,11 @@
+import type { Material } from "@/lib/quote";
+
 export type Estado = "borrador" | "enviada" | "vista" | "aceptada" | "rechazada";
 
 export type Acabado = "natural" | "anodizado" | "electrostatica";
+
+/** Lo que la partida guarda del material al cotizar: si el catálogo cambia, la cotización no. */
+export type FotoMaterial = Pick<Material, "unidad" | "precioCentavos" | "pieza">;
 
 export interface PartidaGuardada {
   id: string;
@@ -11,6 +16,8 @@ export interface PartidaGuardada {
   altoCm: number;
   cantidad: number;
   manoObraCentavos: number;
+  /** Ausente en el prototipo: ahí manda el catálogo de ejemplo. */
+  material?: FotoMaterial;
 }
 
 export interface Cotizacion {
@@ -38,6 +45,20 @@ export interface Taller {
   telefono: string;
   condiciones: string;
   plan: "gratis" | "fundador";
+  logoUrl?: string;
+}
+
+export type Croquis = "corrediza" | "cancel" | "mosquitero" | "abatible" | "felpa" | "corrosion";
+
+export interface Plantilla {
+  id: string;
+  /** Nombre corto para la ficha de un toque. */
+  nombre: string;
+  /** Descripción que queda en la partida. */
+  descripcion: string;
+  materialId: string;
+  manoObraCentavos: number;
+  croquis: Croquis;
 }
 
 export const ACABADOS: Record<Acabado, string> = {

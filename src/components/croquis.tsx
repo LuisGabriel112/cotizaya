@@ -1,4 +1,4 @@
-import type { Croquis as TipoCroquis } from "@/lib/demo/plantillas";
+import type { Croquis as TipoCroquis } from "@/lib/cotizaciones/tipos";
 
 /** Croquis de línea de cada plantilla, a mano alzada de taller: trazo de 2 px en tinta. */
 export function Croquis({ tipo, className = "" }: { tipo: TipoCroquis; className?: string }) {

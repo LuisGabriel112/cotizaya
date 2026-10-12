@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { DemoProvider } from "@/lib/demo/store";
 
 export const metadata: Metadata = {
   title: "Cotización",
@@ -7,5 +6,5 @@ export const metadata: Metadata = {
 };
 
 export default function PublicaLayout({ children }: { children: React.ReactNode }) {
-  return <DemoProvider>{children}</DemoProvider>;
+  return children;
 }

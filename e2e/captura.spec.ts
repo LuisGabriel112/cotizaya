@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 test("ventana corrediza 120 × 150: de la lista al enlace del cliente", async ({ page }) => {
-  await page.goto("/cotizaciones");
+  await page.goto("/demo/cotizaciones");
   await page.evaluate(() => localStorage.clear());
   await page.reload();
 
@@ -38,19 +38,19 @@ test("ventana corrediza 120 × 150: de la lista al enlace del cliente", async ({
   await page.getByRole("button", { name: "Aceptar cotización" }).click();
   await expect(page.getByRole("status")).toContainText("Aceptada.");
 
-  await page.goto("/cotizaciones");
+  await page.goto("/demo/cotizaciones");
   await expect(page.getByText("Tu cliente la aceptó")).toBeVisible();
 });
 
 test("una medida en cero no deja agregar la partida", async ({ page }) => {
-  await page.goto("/cotizaciones/nueva");
+  await page.goto("/demo/cotizaciones/nueva");
   await page.getByRole("button", { name: /Corrediza/ }).click();
   await page.getByLabel("Ancho en centímetros").fill("0");
   await expect(page.getByRole("button", { name: "Siguiente: alto" })).toBeDisabled();
 });
 
 test("medida con coma y dos ventanas iguales: redondea al cm y cobra dos instalaciones", async ({ page }) => {
-  await page.goto("/cotizaciones/nueva");
+  await page.goto("/demo/cotizaciones/nueva");
   await page.getByRole("button", { name: /Corrediza/ }).click();
   await page.getByLabel("Ancho en centímetros").fill("120,5");
   await page.keyboard.press("Enter");

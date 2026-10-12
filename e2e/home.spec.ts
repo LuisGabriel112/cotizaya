@@ -1,8 +1,8 @@
 import { expect, test } from "@playwright/test";
 
-test("la entrada lleva a la lista en español de México", async ({ page }) => {
-  await page.goto("/");
-  await expect(page).toHaveURL(/\/cotizaciones$/);
+test("el prototipo abre la lista de ejemplo en español de México, sin login", async ({ page }) => {
+  await page.goto("/demo");
+  await expect(page).toHaveURL(/\/demo\/cotizaciones$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "es-MX");
   await expect(page.getByRole("heading", { level: 1, name: "Cotizaciones" })).toBeVisible();
 });

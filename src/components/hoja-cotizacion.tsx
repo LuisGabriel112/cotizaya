@@ -1,32 +1,29 @@
+import Image from "next/image";
 import { Folio } from "@/components/ui/folio";
 import { ReglaCinta } from "@/components/ui/regla-cinta";
 import { RenglonPartida } from "@/components/ui/renglon-partida";
 import { Total } from "@/components/ui/total";
-import { materialPorId } from "@/lib/demo/catalogo";
-import { plantillaPorId } from "@/lib/demo/plantillas";
-import type { Resumen } from "@/lib/demo/derivados";
-import { ACABADOS } from "@/lib/demo/tipos";
-import type { Cotizacion, Taller } from "@/lib/demo/tipos";
+import type { Catalogo } from "@/lib/cotizaciones/catalogo";
+import type { Resumen } from "@/lib/cotizaciones/resumen";
+import { ACABADOS, type Cotizacion, type Taller } from "@/lib/cotizaciones/tipos";
 import { formatFecha } from "@/lib/format";
 
 /**
  * La hoja que recibe el cliente. Misma composición que el PDF (fase 4):
  * taller y folio arriba, partidas en renglones, recuadro de acabado, total con línea doble, condiciones al pie.
  */
-export function HojaCotizacion({ cotizacion: c, resumen, taller }: { cotizacion: Cotizacion; resumen: Resumen; taller: Taller }) {
-  const iniciales = taller.nombre
-    .split(" ")
-    .filter((p) => p.length > 3)
-    .slice(-2)
-    .map((p) => p[0])
-    .join("");
+interface Props {
+  cotizacion: Cotizacion;
+  resumen: Resumen;
+  taller: Taller;
+  catalogo: Catalogo;
+}
 
+export function HojaCotizacion({ cotizacion: c, resumen, taller, catalogo }: Props) {
   return (
     <article className="border-2 border-tinta bg-papel px-4 py-5" aria-label={`Cotización ${c.folio}`}>
       <header className="flex items-center gap-3">
-        <span className="titulo grid size-12 shrink-0 place-items-center rounded-sm border-2 border-tinta text-xl" aria-hidden="true">
-          {iniciales}
-        </span>
+        <Marca taller={taller} />
         <div className="min-w-0">
           <p className="titulo text-xl leading-tight">{taller.nombre}</p>
           <p className="text-base text-tinta-2">{taller.ciudad}</p>
@@ -57,10 +54,10 @@ export function HojaCotizacion({ cotizacion: c, resumen, taller }: { cotizacion:
               anchoCm={partida.anchoCm}
               altoCm={partida.altoCm}
               cantidad={partida.cantidad}
-              unidad={materialPorId(partida.materialId)?.unidad ?? "pieza"}
-              pieza={materialPorId(partida.materialId)?.pieza}
+              unidad={catalogo.materialDe(partida)?.unidad ?? "pieza"}
+              pieza={catalogo.materialDe(partida)?.pieza}
               resultado={resultado}
-              croquis={plantillaPorId(partida.plantillaId)?.croquis}
+              croquis={catalogo.plantilla(partida.plantillaId)?.croquis}
             />
           </li>
         ))}
@@ -96,5 +93,23 @@ export function HojaCotizacion({ cotizacion: c, resumen, taller }: { cotizacion:
         {taller.plan === "gratis" && <p className="pt-2">Hecho con Cotiza Ya</p>}
       </footer>
     </article>
+  );
+}
+
+/** Logo del taller si el admin lo subió; si no, sus iniciales en el mismo recuadro. */
+function Marca({ taller }: { taller: Taller }) {
+  if (taller.logoUrl) {
+    return <Image src={taller.logoUrl} alt="" width={48} height={48} unoptimized className="size-12 shrink-0 rounded-sm object-contain" />;
+  }
+  const iniciales = taller.nombre
+    .split(" ")
+    .filter((p) => p.length > 3)
+    .slice(-2)
+    .map((p) => p[0])
+    .join("");
+  return (
+    <span className="titulo grid size-12 shrink-0 place-items-center rounded-sm border-2 border-tinta text-xl" aria-hidden="true">
+      {iniciales}
+    </span>
   );
 }

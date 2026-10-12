@@ -1,6 +1,6 @@
 import { Croquis } from "@/components/croquis";
 import { formatCentavos, formatMedidaParcial, formatMedidas } from "@/lib/format";
-import type { Croquis as TipoCroquis } from "@/lib/demo/plantillas";
+import type { Croquis as TipoCroquis } from "@/lib/cotizaciones/tipos";
 import type { ResultadoPartida, Unidad } from "@/lib/quote";
 
 const ERRORES = {

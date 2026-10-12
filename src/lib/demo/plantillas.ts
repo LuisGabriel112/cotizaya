@@ -1,15 +1,4 @@
-export type Croquis = "corrediza" | "cancel" | "mosquitero" | "abatible" | "felpa" | "corrosion";
-
-export interface Plantilla {
-  id: string;
-  /** Nombre corto para la ficha de un toque. */
-  nombre: string;
-  /** Descripción que queda en la partida. */
-  descripcion: string;
-  materialId: string;
-  manoObraCentavos: number;
-  croquis: Croquis;
-}
+import type { Plantilla } from "@/lib/cotizaciones/tipos";
 
 // Plantillas de costa. Mano de obra de ejemplo.
 export const PLANTILLAS: Plantilla[] = [
@@ -20,7 +9,3 @@ export const PLANTILLAS: Plantilla[] = [
   { id: "felpa", nombre: "Felpa y rodamientos", descripcion: "Cambio de felpa y rodamientos", materialId: "felpa-rodamientos", manoObraCentavos: 25_000, croquis: "felpa" },
   { id: "corrosion", nombre: "Corrosión", descripcion: "Reemplazo de perfil por corrosión", materialId: "perfil-corrosion", manoObraCentavos: 40_000, croquis: "corrosion" },
 ];
-
-export function plantillaPorId(id: string): Plantilla | undefined {
-  return PLANTILLAS.find((p) => p.id === id);
-}

@@ -1,4 +1,4 @@
-import type { Estado } from "@/lib/demo/tipos";
+import type { Estado } from "@/lib/cotizaciones/tipos";
 
 const TEXTO: Record<Estado, string> = {
   borrador: "Borrador",

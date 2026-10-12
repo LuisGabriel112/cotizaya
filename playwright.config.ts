@@ -21,7 +21,8 @@ export default defineConfig({
   ],
   webServer: {
     command: `pnpm dev --port ${PORT}`,
-    url: `http://localhost:${PORT}`,
+    // /demo no necesita Supabase: sirve para saber que el servidor ya levantó.
+    url: `http://localhost:${PORT}/demo/cotizaciones`,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
   },

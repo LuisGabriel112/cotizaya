@@ -1,4 +1,4 @@
-import type { Cotizacion, Taller } from "./tipos";
+import type { Cotizacion, Taller } from "@/lib/cotizaciones/tipos";
 
 // Taller y clientes ficticios para el prototipo.
 export const TALLER: Taller = {
