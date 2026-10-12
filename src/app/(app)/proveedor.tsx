@@ -6,6 +6,7 @@ import { crearAgrupador } from "@/lib/cotizaciones/agrupador";
 import { crearCatalogo } from "@/lib/cotizaciones/catalogo";
 import { reducir, type Accion } from "@/lib/cotizaciones/estado";
 import { ProveedorFuente, type AccionesCotizaciones } from "@/lib/cotizaciones/fuente";
+import { crearAccionesOptimistas } from "@/lib/cotizaciones/optimista";
 import { crearRutas } from "@/lib/cotizaciones/rutas";
 import type { DatosApp } from "@/lib/server/supabase/datos-app";
 import * as servidor from "./acciones";
@@ -24,37 +25,7 @@ function useAcciones(despachar: Dispatch<Accion>, alFallar: () => void): Accione
     return () => window.removeEventListener("pagehide", vaciar);
   }, [agrupador]);
 
-  return useMemo(() => {
-    const atras = (p: Promise<unknown>) => void p.catch(alFallar);
-    return {
-      crear: async () => {
-        const cotizacion = await servidor.crearCotizacion();
-        despachar({ tipo: "crear", cotizacion });
-        return cotizacion.id;
-      },
-      guardarPartida: (id, partida) => {
-        despachar({ tipo: "guardarPartida", id, partida });
-        // El servidor regresa la partida con la foto del precio: esa es la que queda.
-        atras(servidor.guardarPartida(id, partida).then((conFoto) => despachar({ tipo: "guardarPartida", id, partida: conFoto })));
-      },
-      quitarPartida: (id, partidaId) => {
-        despachar({ tipo: "quitarPartida", id, partidaId });
-        atras(servidor.quitarPartida(id, partidaId));
-      },
-      editar: (id, cambios) => {
-        despachar({ tipo: "editar", id, cambios });
-        agrupador.agregar(id, cambios);
-      },
-      marcarEnviada: (id) => {
-        despachar({ tipo: "enviada", id });
-        atras(servidor.marcarEnviada(id));
-      },
-      avisoVisto: (id) => {
-        despachar({ tipo: "avisoVisto", id });
-        atras(servidor.avisoVisto(id));
-      },
-    };
-  }, [despachar, alFallar, agrupador]);
+  return useMemo(() => crearAccionesOptimistas({ despachar, servidor, agrupador, alFallar }), [despachar, alFallar, agrupador]);
 }
 
 export function ProveedorSupabase({ datos, children }: { datos: DatosApp; children: ReactNode }) {
