@@ -1,5 +1,5 @@
 import { Croquis } from "@/components/croquis";
-import { formatCentavos, formatMedidas } from "@/lib/format";
+import { formatCentavos, formatMedidaParcial, formatMedidas } from "@/lib/format";
 import type { Croquis as TipoCroquis } from "@/lib/demo/plantillas";
 import type { ResultadoPartida, Unidad } from "@/lib/quote";
 
@@ -26,7 +26,7 @@ interface Props {
 /** Renglón de libreta: descripción, medidas en mono a la izquierda, importe a la derecha. */
 export function RenglonPartida({ descripcion, anchoCm, altoCm, cantidad, unidad, resultado, croquis, enCurso, pieza }: Props) {
   const medidas = enCurso && unidad !== "pieza" && !(anchoCm > 0 && altoCm > 0)
-    ? `${anchoCm > 0 ? (anchoCm / 100).toFixed(2) : "?"} × ${altoCm > 0 ? (altoCm / 100).toFixed(2) : "?"} m`
+    ? formatMedidaParcial(anchoCm, altoCm)
     : formatMedidas(anchoCm, altoCm, unidad, cantidad, pieza);
 
   return (

@@ -15,13 +15,20 @@ export interface PartidaEntrada {
   altoCm: number;
   cantidad: number;
   material: Pick<Material, "unidad" | "precioCentavos">;
+  /** Mano de obra por pieza; se multiplica por la cantidad. */
   manoObraCentavos: number;
 }
 
 export type ErrorPartida = "medida-invalida" | "cantidad-invalida" | "precio-invalido";
 
 export type ResultadoPartida =
-  | { ok: true; materialCentavos: number; importeCentavos: number }
+  | {
+      ok: true;
+      materialCentavos: number;
+      /** Mano de obra de toda la partida (por pieza × cantidad). */
+      manoObraCentavos: number;
+      importeCentavos: number;
+    }
   | { ok: false; error: ErrorPartida };
 
 export interface OpcionesTotales {

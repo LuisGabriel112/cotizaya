@@ -48,3 +48,16 @@ test("una medida en cero no deja agregar la partida", async ({ page }) => {
   await page.getByLabel("Ancho en centímetros").fill("0");
   await expect(page.getByRole("button", { name: "Siguiente: alto" })).toBeDisabled();
 });
+
+test("medida con coma y dos ventanas iguales: redondea al cm y cobra dos instalaciones", async ({ page }) => {
+  await page.goto("/cotizaciones/nueva");
+  await page.getByRole("button", { name: /Corrediza/ }).click();
+  await page.getByLabel("Ancho en centímetros").fill("120,5");
+  await page.keyboard.press("Enter");
+  await page.getByLabel("Alto en centímetros").fill("150");
+  await page.getByRole("button", { name: "Una más" }).click();
+  // 1.21 × 1.50 = 1.815 m² × $1,850 × 2 = $6,715.50 + $350 × 2 = $7,415.50
+  await expect(page.getByTestId("total")).toHaveText("$7,415.50");
+  await page.getByRole("button", { name: "Agregar partida" }).click();
+  await expect(page.getByText("1.21 × 1.50 m ×2")).toBeVisible();
+});

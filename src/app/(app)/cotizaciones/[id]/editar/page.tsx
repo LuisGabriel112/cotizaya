@@ -18,6 +18,7 @@ import { PLANTILLAS, plantillaPorId, type Plantilla } from "@/lib/demo/plantilla
 import { nuevoId, useDemo } from "@/lib/demo/store";
 import { ACABADOS, type Acabado, type Cotizacion, type PartidaGuardada } from "@/lib/demo/tipos";
 import { formatCentavos } from "@/lib/format";
+import { limpiarCifra, parsearCantidad, parsearCm, parsearDescuento } from "@/lib/quote";
 
 interface Borrador {
   partidaId: string;
@@ -99,7 +100,7 @@ function Conversacion({ c }: { c: Cotizacion }) {
 
   const enviar = (e: FormEvent) => {
     e.preventDefault();
-    if (paso.tipo === "ancho" && Number(paso.b.ancho) > 0) setPaso({ tipo: "alto", b: paso.b });
+    if (paso.tipo === "ancho" && parsearCm(paso.b.ancho) !== null) setPaso({ tipo: "alto", b: paso.b });
     else if ((paso.tipo === "alto" || paso.tipo === "piezas") && listaParaGuardar(paso.b, paso.tipo)) guardar(paso.b);
     else if (paso.tipo === "cliente" || paso.tipo === "descuento" || paso.tipo === "acabado") setPaso({ tipo: "trabajo" });
   };
@@ -208,7 +209,7 @@ function Conversacion({ c }: { c: Cotizacion }) {
                 unidad="%"
                 valor={c.descuentoPct ? String(c.descuentoPct) : ""}
                 max={2}
-                onCambio={(v) => demo.editar(c.id, { descuentoPct: Math.min(100, Number(v) || 0) })}
+                onCambio={(v) => demo.editar(c.id, { descuentoPct: parsearDescuento(v) ?? 0 })}
               />
               <p className="mt-2 text-base text-tinta-2">Se resta antes del IVA. Déjalo vacío para no dar descuento.</p>
             </Pregunta>
@@ -251,7 +252,7 @@ function Conversacion({ c }: { c: Cotizacion }) {
           </Boton>
         )}
         {paso.tipo === "ancho" && (
-          <Boton type="submit" form={FORM} disabled={!(Number(paso.b.ancho) > 0)}>
+          <Boton type="submit" form={FORM} disabled={parsearCm(paso.b.ancho) === null}>
             Siguiente: alto
           </Boton>
         )}
@@ -276,9 +277,10 @@ function aGuardada(b: Borrador): PartidaGuardada {
     plantillaId: b.plantillaId,
     descripcion: b.descripcion,
     materialId: b.materialId,
-    anchoCm: Number(b.ancho) || 0,
-    altoCm: Number(b.alto) || 0,
-    cantidad: Number(b.cantidad) || 0,
+    // Lo que aún no es medida válida queda en 0: la partida sale en error, nunca con un monto inventado.
+    anchoCm: parsearCm(b.ancho) ?? 0,
+    altoCm: parsearCm(b.alto) ?? 0,
+    cantidad: parsearCantidad(b.cantidad) ?? 0,
     manoObraCentavos: b.manoObraCentavos,
   };
 }
@@ -294,7 +296,8 @@ function unidadDe(b: Pick<Borrador, "materialId">) {
 }
 
 function listaParaGuardar(b: Borrador, paso: "alto" | "piezas") {
-  return paso === "piezas" ? Number(b.cantidad) > 0 : Number(b.ancho) > 0 && Number(b.alto) > 0 && Number(b.cantidad) > 0;
+  const cantidad = parsearCantidad(b.cantidad) !== null;
+  return paso === "piezas" ? cantidad : cantidad && parsearCm(b.ancho) !== null && parsearCm(b.alto) !== null;
 }
 
 function Pregunta({ titulo, detalle, onCancelar, children }: { titulo: string; detalle?: ReactNode; onCancelar?: () => void; children: ReactNode }) {
@@ -408,16 +411,16 @@ function PreguntaMedida({
       onCancelar={onCancelar}
     >
       {paso === "ancho" && (
-        <CampoNumero key="ancho" etiqueta="Ancho en centímetros" unidad="cm" valor={b.ancho} onCambio={(v) => onCambio({ ...b, ancho: v })} />
+        <CampoNumero key="ancho" etiqueta="Ancho en centímetros" unidad="cm" decimal valor={b.ancho} onCambio={(v) => onCambio({ ...b, ancho: v })} />
       )}
       {paso === "alto" && (
-        <CampoNumero key="alto" etiqueta="Alto en centímetros" unidad="cm" valor={b.alto} onCambio={(v) => onCambio({ ...b, alto: v })} />
+        <CampoNumero key="alto" etiqueta="Alto en centímetros" unidad="cm" decimal valor={b.alto} onCambio={(v) => onCambio({ ...b, alto: v })} />
       )}
       {pieza && (
         <CampoNumero key="piezas" etiqueta={`Número de ${plural}`} unidad={plural} max={3} valor={b.cantidad} onCambio={(v) => onCambio({ ...b, cantidad: v })} />
       )}
 
-      {paso === "alto" && <Iguales valor={Number(b.cantidad) || 1} onCambio={(n) => onCambio({ ...b, cantidad: String(n) })} />}
+      {paso === "alto" && <Iguales valor={parsearCantidad(b.cantidad) ?? 1} onCambio={(n) => onCambio({ ...b, cantidad: String(n) })} />}
 
       {!b.nueva && (
         <button type="button" onClick={onQuitar} className="titulo mt-5 min-h-14 text-xl text-rojo underline">
@@ -434,24 +437,28 @@ function CampoNumero({
   valor,
   onCambio,
   max = 4,
+  decimal = false,
 }: {
   etiqueta: string;
   unidad: string;
   valor: string;
   onCambio: (v: string) => void;
+  /** Cifras enteras permitidas. */
   max?: number;
+  /** Acepta medio centímetro: punto o coma y una cifra. */
+  decimal?: boolean;
 }) {
   return (
     <label className="flex h-20 items-center gap-3 rounded-sm border-2 border-tinta bg-papel px-4 focus-within:outline-3 focus-within:outline-offset-2 focus-within:outline-tinta">
       <span className="sr-only">{etiqueta}</span>
       <input
         autoFocus
-        inputMode="numeric"
-        pattern="[0-9]*"
+        inputMode={decimal ? "decimal" : "numeric"}
+        pattern={decimal ? "[0-9]*[.,]?[0-9]?" : "[0-9]*"}
         enterKeyHint="next"
         autoComplete="off"
         value={valor}
-        onChange={(e) => onCambio(e.target.value.replace(/\D/g, "").slice(0, max))}
+        onChange={(e) => onCambio(limpiarCifra(e.target.value, { enteros: max, decimal }))}
         className="num w-full min-w-0 bg-transparent text-right text-5xl font-bold outline-none"
       />
       <span className="num shrink-0 text-2xl text-tinta-2">{unidad}</span>

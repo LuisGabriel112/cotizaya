@@ -14,17 +14,17 @@ const felpa: PartidaEntrada = {
   altoCm: 0,
   cantidad: 4,
   material: { unidad: "pieza", precioCentavos: 18_000 }, // $180 por pieza
-  manoObraCentavos: 20_000,
+  manoObraCentavos: 20_000, // $200 por hoja
 };
 
 describe("calcularPartida", () => {
   it("ventana corrediza 120 × 150 por m²: 1.8 m² × $1,850 + $350", () => {
-    expect(calcularPartida(corrediza)).toEqual({ ok: true, materialCentavos: 333_000, importeCentavos: 368_000 });
+    expect(calcularPartida(corrediza)).toEqual({ ok: true, materialCentavos: 333_000, manoObraCentavos: 35_000, importeCentavos: 368_000 });
   });
 
-  it("multiplica el material por cantidad; la mano de obra va una vez por partida", () => {
+  it("multiplica material y mano de obra por cantidad: 2 ventanas = 2 instalaciones", () => {
     const r = calcularPartida({ ...corrediza, cantidad: 2 });
-    expect(r).toEqual({ ok: true, materialCentavos: 666_000, importeCentavos: 701_000 });
+    expect(r).toEqual({ ok: true, materialCentavos: 666_000, manoObraCentavos: 70_000, importeCentavos: 736_000 });
   });
 
   it("mosquitero 100 × 120 por metro lineal: perímetro 4.4 m × $95", () => {
@@ -35,11 +35,11 @@ describe("calcularPartida", () => {
       material: { unidad: "ml", precioCentavos: 9_500 },
       manoObraCentavos: 0,
     });
-    expect(r).toEqual({ ok: true, materialCentavos: 41_800, importeCentavos: 41_800 });
+    expect(r).toEqual({ ok: true, materialCentavos: 41_800, manoObraCentavos: 0, importeCentavos: 41_800 });
   });
 
-  it("felpa y rodamientos por pieza no usa medidas", () => {
-    expect(calcularPartida(felpa)).toEqual({ ok: true, materialCentavos: 72_000, importeCentavos: 92_000 });
+  it("felpa y rodamientos por pieza no usa medidas: 4 × $180 + 4 × $200", () => {
+    expect(calcularPartida(felpa)).toEqual({ ok: true, materialCentavos: 72_000, manoObraCentavos: 80_000, importeCentavos: 152_000 });
   });
 
   it("redondea half-up al final de la partida", () => {
@@ -64,17 +64,26 @@ describe("calcularPartida", () => {
     expect(calcularPartida({ ...corrediza, manoObraCentavos: -1 })).toEqual({ ok: false, error: "precio-invalido" });
     expect(calcularPartida({ ...corrediza, material: { unidad: "m2", precioCentavos: 10.5 } })).toEqual({ ok: false, error: "precio-invalido" });
   });
+
+  it("marca error si el importe se sale de la precisión entera", () => {
+    expect(calcularPartida({ ...corrediza, anchoCm: 1e9, altoCm: 1e9 })).toEqual({ ok: false, error: "medida-invalida" });
+    // 1e17 / 10 000 cabe en un entero seguro, pero el producto ya perdió precisión.
+    expect(calcularPartida({ ...corrediza, anchoCm: 1e6, altoCm: 1e6, material: { unidad: "m2", precioCentavos: 100_000 } })).toEqual({
+      ok: false,
+      error: "medida-invalida",
+    });
+  });
 });
 
 describe("calcularTotales", () => {
   it("descuento antes del IVA y IVA de 16 %", () => {
-    // 368 000 + 92 000 = 460 000; −10 % = 414 000; IVA 66 240
+    // 368 000 + 152 000 = 520 000; −10 % = 468 000; IVA 74 880
     expect(calcularTotales([corrediza, felpa], { descuentoPct: 10, conIva: true })).toEqual({
-      subtotalCentavos: 460_000,
-      descuentoCentavos: 46_000,
-      baseCentavos: 414_000,
-      ivaCentavos: 66_240,
-      totalCentavos: 480_240,
+      subtotalCentavos: 520_000,
+      descuentoCentavos: 52_000,
+      baseCentavos: 468_000,
+      ivaCentavos: 74_880,
+      totalCentavos: 542_880,
       partidasConError: [],
     });
   });

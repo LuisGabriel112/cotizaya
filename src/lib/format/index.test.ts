@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatCentavos, formatFecha, formatFolio, formatMedidas, formatMetros } from "./index";
+import { formatCentavos, formatFecha, formatFolio, formatMedidaParcial, formatMedidas, formatMetros } from "./index";
 
 describe("formatFolio", () => {
   it("rellena a 4 dígitos", () => {
@@ -18,6 +18,14 @@ describe("formatMedidas", () => {
     expect(formatMedidas(0, 0, "pieza", 1)).toBe("1 pza");
     expect(formatMedidas(0, 0, "pieza", 8)).toBe("8 pzas");
     expect(formatMedidas(0, 0, "pieza", 4, ["hoja", "hojas"])).toBe("4 hojas");
+  });
+});
+
+describe("formatMedidaParcial", () => {
+  it("marca con ? el lado que falta", () => {
+    expect(formatMedidaParcial(120, 0)).toBe("1.20 × ? m");
+    expect(formatMedidaParcial(0, 0)).toBe("? × ? m");
+    expect(formatMedidaParcial(1205, 150)).toBe("12.05 × 1.50 m");
   });
 });
 

@@ -49,6 +49,12 @@ export function formatMedidas(
   return cantidad > 1 ? `${medidas} ×${cantidad}` : medidas;
 }
 
+/** Medida que se está capturando: lo que falta sale como "?", p. ej. "1.20 × ? m". */
+export function formatMedidaParcial(anchoCm: number, altoCm: number): string {
+  const lado = (cm: number) => (cm > 0 ? metros.format(cm / 100) : "?");
+  return `${lado(anchoCm)} × ${lado(altoCm)} m`;
+}
+
 /** 120 → "1.20 m". Las medidas se guardan en cm y se muestran en m. */
 export function formatMetros(cm: number): string {
   if (!Number.isFinite(cm)) {

@@ -1,6 +1,7 @@
 import type { OpcionesTotales, PartidaEntrada, ResultadoPartida, Totales } from "./types";
 
 export type * from "./types";
+export { limpiarCifra, parsearCantidad, parsearCm, parsearDescuento } from "./entrada";
 
 export const TASA_IVA_PCT = 16;
 
@@ -11,8 +12,11 @@ function dividirRedondeando(numerador: number, divisor: number): number {
   return Math.floor((numerador * 2 + divisor) / (divisor * 2));
 }
 
+/** Medidas absurdas pueden desbordar la precisión entera; mejor error que un monto corrupto. */
+const desborda = (...ns: number[]) => ns.some((n) => !Number.isSafeInteger(n * 2));
+
 /**
- * Importe de una partida: material según su unidad + mano de obra.
+ * Importe de una partida: material según su unidad + mano de obra por pieza.
  * Redondea una sola vez, al final del material.
  */
 export function calcularPartida(p: PartidaEntrada): ResultadoPartida {
@@ -33,7 +37,9 @@ export function calcularPartida(p: PartidaEntrada): ResultadoPartida {
         return { ok: false, error: "medida-invalida" };
       }
       // cm × cm / 10 000 = m²
-      materialCentavos = dividirRedondeando(anchoCm * altoCm * material.precioCentavos * cantidad, 10_000);
+      const numerador = anchoCm * altoCm * material.precioCentavos * cantidad;
+      if (desborda(numerador)) return { ok: false, error: "medida-invalida" };
+      materialCentavos = dividirRedondeando(numerador, 10_000);
       break;
     }
     case "ml": {
@@ -41,7 +47,9 @@ export function calcularPartida(p: PartidaEntrada): ResultadoPartida {
         return { ok: false, error: "medida-invalida" };
       }
       // perímetro en cm / 100 = m
-      materialCentavos = dividirRedondeando(2 * (anchoCm + altoCm) * material.precioCentavos * cantidad, 100);
+      const numerador = 2 * (anchoCm + altoCm) * material.precioCentavos * cantidad;
+      if (desborda(numerador)) return { ok: false, error: "medida-invalida" };
+      materialCentavos = dividirRedondeando(numerador, 100);
       break;
     }
     case "pieza":
@@ -49,7 +57,11 @@ export function calcularPartida(p: PartidaEntrada): ResultadoPartida {
       break;
   }
 
-  return { ok: true, materialCentavos, importeCentavos: materialCentavos + manoObraCentavos };
+  const manoObraTotal = manoObraCentavos * cantidad;
+  const importeCentavos = materialCentavos + manoObraTotal;
+  if (desborda(importeCentavos)) return { ok: false, error: "medida-invalida" };
+
+  return { ok: true, materialCentavos, manoObraCentavos: manoObraTotal, importeCentavos };
 }
 
 /** Subtotal, descuento (antes de IVA), IVA opcional y total. */
