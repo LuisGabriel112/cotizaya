@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { HojaCotizacion } from "@/components/hoja-cotizacion";
 import { Icono } from "@/components/icono";
 import { BarraAccion } from "@/components/ui/barra-accion";
-import { Boton, BotonEnlace, clasesBoton } from "@/components/ui/boton";
+import { Boton, clasesBoton } from "@/components/ui/boton";
 import type { Catalogo } from "@/lib/cotizaciones/catalogo";
 import { resumir } from "@/lib/cotizaciones/resumen";
 import type { Cotizacion, Taller } from "@/lib/cotizaciones/tipos";
@@ -41,7 +41,8 @@ export function PantallaPublica({ cotizacion: c, taller, catalogo, demo = false,
       {demo && <p className="mb-3 text-base text-tinta-2">Cotización de ejemplo, hecha con datos de prueba.</p>}
 
       <HojaCotizacion cotizacion={c} resumen={resumir(c, catalogo)} taller={taller} catalogo={catalogo} />
-      {pdfHref && <BotonEnlace href={pdfHref} variante="secundario" className="mt-5 w-full">Descargar PDF</BotonEnlace>}
+      {/* <a> y no Link: Link precargaría la ruta y generaría el PDF sin que nadie lo pida. */}
+      {pdfHref && <a href={pdfHref} download className={clasesBoton("secundario", "mt-5 w-full no-underline")}>Descargar PDF</a>}
 
       {aceptada && (
         <p role="status" className="mt-5 border-2 border-verde bg-papel-2 px-4 py-3 text-lg">
