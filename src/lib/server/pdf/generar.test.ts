@@ -31,4 +31,9 @@ describe("generarPdf", () => {
     const pdf = await generarPdf({ ...documento, extras: [], totales: { subtotal: "$1.00", total: "$1.00" }, conMarca: false });
     expect(encabezado(pdf)).toBe("%PDF");
   });
+
+  it("si el logo no se puede bajar, entrega el PDF sin logo", async () => {
+    const pdf = await generarPdf({ ...documento, taller: { ...documento.taller, logoUrl: "http://127.0.0.1:1/no-existe.png" } });
+    expect(encabezado(pdf)).toBe("%PDF");
+  });
 });
