@@ -81,7 +81,7 @@ export function PlantillaPdf({ doc }: { doc: DocumentoPdf }) {
       {doc.extras.length > 0 && <View style={estilos.extras}>{doc.extras.map((extra) => <Text key={extra} style={estilos.extra}>{extra}</Text>)}</View>}
       <Sumas totales={doc.totales} />
       <View style={estilos.pie}>
-        <Text>Condiciones de pago: {doc.condiciones}</Text>
+        {doc.condiciones && <Text>Condiciones de pago: {doc.condiciones}</Text>}
         <Text>{doc.vigencia}</Text><Text>Teléfono: {doc.taller.telefono}</Text>
         {doc.conMarca && <Text style={estilos.marca}>Hecho con Cotiza Ya</Text>}
       </View>

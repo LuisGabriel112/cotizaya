@@ -28,7 +28,7 @@ describe("generarPdf", () => {
   });
 
   it("también sin extras, descuento, IVA ni marca", async () => {
-    const pdf = await generarPdf({ ...documento, extras: [], totales: { subtotal: "$1.00", total: "$1.00" }, conMarca: false });
+    const pdf = await generarPdf({ ...documento, extras: [], totales: { subtotal: "$1.00", total: "$1.00" }, condiciones: "", conMarca: false });
     expect(encabezado(pdf)).toBe("%PDF");
   });
 
