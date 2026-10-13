@@ -127,6 +127,21 @@ suite("RLS entre talleres", () => {
     const codigo = await codigoDeError(db, "select public.admin_alta_taller('X', '529990000000', '', '')");
     expect(codigo).toBe(PERMISO_NEGADO);
   });
+
+  it("un no-admin no puede editar datos de otro taller", async () => {
+    await comoUsuario(db, a);
+    const codigo = await codigoDeError(db, "select public.admin_editar_taller($1, 'X', '', '')", [tallerB]);
+    expect(codigo).toBe(PERMISO_NEGADO);
+  });
+
+  it("el admin edita nombre, ciudad y condiciones de cualquier taller", async () => {
+    await db.query("insert into public.admins (user_id) values ($1)", [a.id]);
+    await comoUsuario(db, a);
+    await db.query("select public.admin_editar_taller($1, $2, $3, $4)", [tallerB, " La Costa Sur ", " Veracruz ", " 50% de anticipo "]);
+    await comoPostgres(db);
+    const { rows } = await db.query("select nombre, ciudad, condiciones from public.workshops where id = $1", [tallerB]);
+    expect(rows[0]).toEqual({ nombre: "La Costa Sur", ciudad: "Veracruz", condiciones: "50% de anticipo" });
+  });
 });
 
 suite("folio, enlace público y primer ingreso", () => {

@@ -11,13 +11,16 @@ const telefonoDeMexico = z.string().transform((texto, ctx) => {
   return z.NEVER;
 });
 
+const camposDatos = {
+  nombre: z.string().trim().min(1, "Escribe el nombre del taller.").max(80),
+  ciudad: z.string().trim().max(80),
+  condiciones: z.string().trim().max(300),
+};
+
+export const esquemaDatos = z.object(camposDatos);
+
 export const esquemaAlta = z
-  .object({
-    nombre: z.string().trim().min(1, "Escribe el nombre del taller.").max(80),
-    telefono: telefonoDeMexico,
-    ciudad: z.string().trim().max(80),
-    condiciones: z.string().trim().max(300),
-  })
+  .object({ ...camposDatos, telefono: telefonoDeMexico })
   .transform(({ telefono, ...resto }) => ({ ...resto, ownerPhone: telefono }));
 
 export const esquemaPlan = z.discriminatedUnion("plan", [

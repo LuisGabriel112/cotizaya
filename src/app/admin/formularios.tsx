@@ -1,8 +1,8 @@
 "use client";
 
-import { useActionState, type ReactNode } from "react";
-import { Boton } from "@/components/ui/boton";
-import { activarPlan, altaTaller, importarCatalogo, subirLogo, type Resultado } from "./acciones";
+import { useActionState, useState, type ReactNode } from "react";
+import { Boton, clasesBoton } from "@/components/ui/boton";
+import { activarPlan, altaTaller, editarDatos, importarCatalogo, subirLogo, type Resultado } from "./acciones";
 
 const CAMPO = "mt-1 min-h-14 w-full rounded-sm border-2 border-tinta bg-papel px-3 text-lg";
 
@@ -48,28 +48,50 @@ function Campo({ etiqueta, children }: { etiqueta: string; children: ReactNode }
 export function FormularioAlta() {
   return (
     <Formulario accion={altaTaller} boton="Dar de alta">
-      <Campo etiqueta="Nombre del taller">
-        <input name="nombre" required maxLength={80} className={CAMPO} />
-      </Campo>
+      <CamposDatos nombre="" ciudad="" condiciones="" />
       <Campo etiqueta="Celular del dueño">
         <input name="telefono" type="tel" inputMode="tel" required placeholder="229 000 0000" className={CAMPO} />
-      </Campo>
-      <Campo etiqueta="Ciudad">
-        <input name="ciudad" maxLength={80} className={CAMPO} />
-      </Campo>
-      <Campo etiqueta="Condiciones de pago">
-        <textarea name="condiciones" maxLength={300} rows={2} placeholder="50 % de anticipo, resto al instalar." className={`${CAMPO} py-2`} />
       </Campo>
     </Formulario>
   );
 }
 
+function CamposDatos({ nombre, ciudad, condiciones }: { nombre: string; ciudad: string; condiciones: string }) {
+  return (
+    <>
+      <Campo etiqueta="Nombre del taller">
+        <input name="nombre" required maxLength={80} defaultValue={nombre} className={CAMPO} />
+      </Campo>
+      <Campo etiqueta="Ciudad">
+        <input name="ciudad" maxLength={80} defaultValue={ciudad} className={CAMPO} />
+      </Campo>
+      <Campo etiqueta="Condiciones de pago">
+        <textarea name="condiciones" maxLength={300} rows={2} defaultValue={condiciones} placeholder="50 % de anticipo, resto al instalar." className={`${CAMPO} py-2`} />
+      </Campo>
+    </>
+  );
+}
+
+export function FormularioDatos({ taller, nombre, ciudad, condiciones }: { taller: string; nombre: string; ciudad: string; condiciones: string }) {
+  return (
+    <Formulario accion={editarDatos.bind(null, taller)} boton="Guardar datos">
+      <CamposDatos nombre={nombre} ciudad={ciudad} condiciones={condiciones} />
+    </Formulario>
+  );
+}
+
 export function FormularioLogo({ taller }: { taller: string }) {
+  const [archivo, setArchivo] = useState("Ningún archivo elegido");
   return (
     <Formulario accion={subirLogo.bind(null, taller)} boton="Subir logo">
-      <Campo etiqueta="Logo (PNG, JPG o WebP, hasta 500 KB)">
-        <input name="logo" type="file" accept="image/png,image/jpeg,image/webp" required className="mt-2 block text-lg" />
-      </Campo>
+      <div>
+        <p className="font-semibold">Logo (PNG, JPG o WebP, hasta 500 KB)</p>
+        <input id="logo-archivo" name="logo" type="file" accept="image/png,image/jpeg,image/webp" required className="peer sr-only" onChange={(evento) => setArchivo(evento.currentTarget.files?.[0]?.name ?? "Ningún archivo elegido")} />
+        <label htmlFor="logo-archivo" className={clasesBoton("secundario", "mt-2 cursor-pointer peer-focus-visible:outline-3 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-tinta")}>
+          Elegir imagen
+        </label>
+        <p className="mt-2 break-all text-base text-tinta-2" aria-live="polite">{archivo}</p>
+      </div>
     </Formulario>
   );
 }

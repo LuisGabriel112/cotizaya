@@ -22,7 +22,7 @@ vi.mock("@/lib/server/supabase/cliente", () => ({ clienteServidor: async () => d
 vi.mock("@/lib/server/supabase/sesion", () => ({ esAdmin }));
 vi.mock("@/lib/cotizaciones/ids", () => ({ nuevoUuid: () => "u1" }));
 
-import { activarPlan, altaTaller, importarCatalogo, subirLogo } from "./acciones";
+import { activarPlan, altaTaller, editarDatos, importarCatalogo, subirLogo } from "./acciones";
 
 const TALLER = "11111111-1111-4111-8111-111111111111";
 const formulario = (campos: Record<string, string | File>) => {
@@ -163,5 +163,32 @@ describe("activarPlan", () => {
   it("error de la base avisa", async () => {
     db.rpc.mockResolvedValue({ data: null, error: { code: "x" } });
     expect((await activarPlan(TALLER, null, formulario({ plan: "gratis", hasta: "" }))).mensaje).toBe("No se pudo cambiar el plan. Intenta otra vez.");
+  });
+});
+
+describe("editarDatos", () => {
+  const datos = { nombre: " Taller Joshi ", ciudad: " Veracruz ", condiciones: " 50% de anticipo " };
+
+  it("guarda nombre, ciudad y condiciones recortados", async () => {
+    const r = await editarDatos(TALLER, null, formulario(datos));
+    expect(db.rpc).toHaveBeenCalledWith("admin_editar_taller", { p_taller: TALLER, p_nombre: "Taller Joshi", p_ciudad: "Veracruz", p_condiciones: "50% de anticipo" });
+    expect(r).toEqual({ ok: true, mensaje: "Datos guardados." });
+    expect(revalidatePath).toHaveBeenCalledWith(`/admin/talleres/${TALLER}`);
+  });
+
+  it("sin nombre no llega a la base", async () => {
+    const r = await editarDatos(TALLER, null, formulario({ ...datos, nombre: "  " }));
+    expect(r).toEqual({ ok: false, mensaje: "Escribe el nombre del taller." });
+    expect(db.rpc).not.toHaveBeenCalled();
+  });
+
+  it("error de la base avisa", async () => {
+    db.rpc.mockResolvedValue({ data: null, error: { code: "x" } });
+    expect((await editarDatos(TALLER, null, formulario(datos))).mensaje).toBe("No se pudieron guardar los datos. Intenta otra vez.");
+  });
+
+  it("sin permiso responde 404", async () => {
+    esAdmin.mockResolvedValue(false);
+    await expect(editarDatos(TALLER, null, formulario(datos))).rejects.toThrow("NEXT_NOT_FOUND");
   });
 });

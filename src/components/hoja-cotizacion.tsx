@@ -7,6 +7,7 @@ import type { Catalogo } from "@/lib/cotizaciones/catalogo";
 import type { Resumen } from "@/lib/cotizaciones/resumen";
 import { ACABADOS, type Cotizacion, type Taller } from "@/lib/cotizaciones/tipos";
 import { formatFecha } from "@/lib/format";
+import { formatTelefono } from "@/lib/telefono";
 
 /**
  * La hoja que recibe el cliente. Misma composición que el PDF (fase 4):
@@ -88,7 +89,7 @@ export function HojaCotizacion({ cotizacion: c, resumen, taller, catalogo }: Pro
       <footer className="mt-5 flex flex-col gap-1 border-t border-dashed border-aluminio pt-3 text-base text-tinta-2">
         <p>{taller.condiciones}</p>
         <p>
-          Precios válidos por 15 días. Tel. {taller.telefono}
+          Precios válidos por 15 días. Tel. {formatTelefono(taller.telefono)}
         </p>
         {taller.plan === "gratis" && <p className="pt-2">Hecho con Cotiza Ya</p>}
       </footer>

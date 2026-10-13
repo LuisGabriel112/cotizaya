@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
-import { aFilasMaterial, esquemaAlta, esquemaPlan, rutaDeLogo, validarLogo } from "@/lib/admin";
+import { aFilasMaterial, esquemaAlta, esquemaDatos, esquemaPlan, rutaDeLogo, validarLogo } from "@/lib/admin";
 import { parsearCatalogoCsv } from "@/lib/catalogo/csv";
 import { esquemaId } from "@/lib/cotizaciones/esquemas";
 import { nuevoUuid } from "@/lib/cotizaciones/ids";
@@ -37,6 +37,22 @@ export async function altaTaller(_: Resultado | null, form: FormData): Promise<R
   });
   if (error) return falla(error.code === DUPLICADO ? "Ya hay un taller con ese teléfono." : "No se pudo dar de alta. Intenta otra vez.");
   redirect(`/admin/talleres/${data}`);
+}
+
+export async function editarDatos(id: string, _prev: Resultado | null, form: FormData): Promise<Resultado> {
+  const taller = esquemaId.parse(id);
+  const resultado = esquemaDatos.safeParse(Object.fromEntries(form));
+  if (!resultado.success) return falla(resultado.error.issues[0]!.message);
+  const { nombre, ciudad, condiciones } = resultado.data;
+  const { error } = await (await dbDeAdmin()).rpc("admin_editar_taller", {
+    p_taller: taller,
+    p_nombre: nombre,
+    p_ciudad: ciudad,
+    p_condiciones: condiciones,
+  });
+  if (error) return falla("No se pudieron guardar los datos. Intenta otra vez.");
+  revalidatePath(`/admin/talleres/${taller}`);
+  return { ok: true, mensaje: "Datos guardados." };
 }
 
 export async function subirLogo(id: string, _: Resultado | null, form: FormData): Promise<Resultado> {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { aFilasMaterial, esquemaAlta, esquemaPlan, rutaDeLogo, validarLogo } from ".";
+import { aFilasMaterial, esquemaAlta, esquemaDatos, esquemaPlan, rutaDeLogo, validarLogo } from ".";
 
 describe("esquemaAlta", () => {
   it("normaliza el teléfono del dueño y limpia espacios", () => {
@@ -13,6 +13,21 @@ describe("esquemaAlta", () => {
   ])("rechaza %j", (datos, campo) => {
     const r = esquemaAlta.safeParse({ ciudad: "", condiciones: "", ...datos });
     expect(r.success).toBe(false);
+    expect(r.error?.issues[0]?.path).toEqual([campo]);
+  });
+});
+
+describe("esquemaDatos", () => {
+  it("limpia espacios y no pide teléfono", () => {
+    expect(esquemaDatos.parse({ nombre: " Taller Joshi ", ciudad: " Veracruz ", condiciones: " 50% " })).toEqual({ nombre: "Taller Joshi", ciudad: "Veracruz", condiciones: "50%" });
+  });
+
+  it.each([
+    [{ nombre: "  " }, "nombre"],
+    [{ nombre: "X", ciudad: "c".repeat(81) }, "ciudad"],
+    [{ nombre: "X", condiciones: "c".repeat(301) }, "condiciones"],
+  ])("rechaza %j", (datos, campo) => {
+    const r = esquemaDatos.safeParse({ ciudad: "", condiciones: "", ...datos });
     expect(r.error?.issues[0]?.path).toEqual([campo]);
   });
 });

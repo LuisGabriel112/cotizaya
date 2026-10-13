@@ -30,3 +30,19 @@ Característica: Panel de administración
   Escenario: Activar plan
     Cuando el admin activa "fundador" hasta "2027-10-12"
     Entonces el taller queda con plan "fundador" y plan_until "2027-10-12"
+
+  Escenario: Corregir datos del taller
+    Dado un admin que abre un taller existente
+    Cuando cambia el nombre, la ciudad y las condiciones de pago
+    Entonces el formulario muestra los valores actuales antes de editar
+    Y se guardan los tres campos sin espacios sobrantes
+
+  Escenario: Rechazar un nombre vacío al editar
+    Dado un admin que abre un taller existente
+    Cuando intenta guardar un nombre compuesto solo por espacios
+    Entonces ve "Escribe el nombre del taller."
+    Y no se llama a la base de datos
+
+  Escenario: Seleccionar un logo
+    Cuando el admin elige una imagen para el logo
+    Entonces ve "Elegir imagen" y el nombre del archivo seleccionado en español

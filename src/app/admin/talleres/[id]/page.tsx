@@ -7,12 +7,13 @@ import { clienteServidor } from "@/lib/server/supabase/cliente";
 import type { FilaMaterial } from "@/lib/server/supabase/mapeo";
 import { sinError } from "@/lib/server/supabase/repositorio";
 import { formatTelefono } from "@/lib/telefono";
-import { FormularioCatalogo, FormularioLogo, FormularioPlan } from "../../formularios";
+import { FormularioCatalogo, FormularioDatos, FormularioLogo, FormularioPlan } from "../../formularios";
 
 interface TallerAdmin {
   id: string;
   nombre: string;
   ciudad: string;
+  condiciones: string;
   owner_phone: string;
   owner_id: string | null;
   logo_url: string | null;
@@ -23,7 +24,7 @@ interface TallerAdmin {
 async function cargar(id: string) {
   const db = await clienteServidor();
   const [taller, materiales] = await Promise.all([
-    db.from("workshops").select("id, nombre, ciudad, owner_phone, owner_id, logo_url, plan, plan_until").eq("id", id).maybeSingle<TallerAdmin>(),
+    db.from("workshops").select("id, nombre, ciudad, condiciones, owner_phone, owner_id, logo_url, plan, plan_until").eq("id", id).maybeSingle<TallerAdmin>(),
     db.from("materials").select("*").eq("workshop_id", id).order("nombre").returns<FilaMaterial[]>(),
   ]);
   return { taller: sinError(taller), materiales: sinError(materiales) ?? [] };
@@ -50,6 +51,9 @@ export default async function TallerAdmin({ params }: { params: Promise<{ id: st
         </div>
       </header>
 
+      <Seccion titulo="Datos del taller">
+        <FormularioDatos taller={taller.id} nombre={taller.nombre} ciudad={taller.ciudad} condiciones={taller.condiciones} />
+      </Seccion>
       <Seccion titulo="Plan">
         <FormularioPlan taller={taller.id} plan={taller.plan} hasta={taller.plan_until} />
       </Seccion>
@@ -60,8 +64,8 @@ export default async function TallerAdmin({ params }: { params: Promise<{ id: st
         <ul className="mb-6 border-t border-dashed border-aluminio">
           {materiales.map((m) => (
             <li key={m.id} className="flex justify-between gap-3 border-b border-dashed border-aluminio py-2">
-              <span>
-                {m.nombre} <span className="num text-base text-tinta-2">{m.clave}</span>
+              <span className="min-w-0">
+                {m.nombre} <span className="num block break-words text-base text-tinta-2">{m.clave}</span>
               </span>
               <span className="num">
                 {formatCentavos(m.precio_centavos)}/{m.unidad === "m2" ? "m²" : m.unidad === "ml" ? "m" : (m.pieza_singular ?? "pza")}
