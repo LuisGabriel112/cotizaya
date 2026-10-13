@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { HojaCotizacion } from "@/components/hoja-cotizacion";
 import { Icono } from "@/components/icono";
 import { BarraAccion } from "@/components/ui/barra-accion";
-import { Boton, clasesBoton } from "@/components/ui/boton";
+import { Boton, BotonEnlace, clasesBoton } from "@/components/ui/boton";
 import type { Catalogo } from "@/lib/cotizaciones/catalogo";
 import { resumir } from "@/lib/cotizaciones/resumen";
 import type { Cotizacion, Taller } from "@/lib/cotizaciones/tipos";
@@ -16,12 +16,13 @@ interface Props {
   catalogo: Catalogo;
   /** Prototipo: avisa que son datos de prueba. */
   demo?: boolean;
+  pdfHref?: string;
   onAbierta: () => void;
   onAceptar: () => void;
 }
 
 // Lo que ve el cliente al abrir el enlace. Solo esta cotización; nada más del taller.
-export function PantallaPublica({ cotizacion: c, taller, catalogo, demo = false, onAbierta, onAceptar }: Props) {
+export function PantallaPublica({ cotizacion: c, taller, catalogo, demo = false, pdfHref, onAbierta, onAceptar }: Props) {
   const registrada = useRef(false);
 
   // Evento "abierta": una vez por visita.
@@ -40,6 +41,7 @@ export function PantallaPublica({ cotizacion: c, taller, catalogo, demo = false,
       {demo && <p className="mb-3 text-base text-tinta-2">Cotización de ejemplo, hecha con datos de prueba.</p>}
 
       <HojaCotizacion cotizacion={c} resumen={resumir(c, catalogo)} taller={taller} catalogo={catalogo} />
+      {pdfHref && <BotonEnlace href={pdfHref} variante="secundario" className="mt-5 w-full">Descargar PDF</BotonEnlace>}
 
       {aceptada && (
         <p role="status" className="mt-5 border-2 border-verde bg-papel-2 px-4 py-3 text-lg">

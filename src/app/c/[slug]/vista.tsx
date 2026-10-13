@@ -19,5 +19,5 @@ export function VistaPublica({ slug, vista }: { slug: string; vista: Datos | nul
     // Si falla, vuelve a mostrar el botón para que el cliente lo intente otra vez.
     aceptarCotizacion(slug).catch(() => setCotizacion(vista.cotizacion));
   };
-  return <PantallaPublica cotizacion={cotizacion} taller={vista.taller} catalogo={CATALOGO} onAbierta={alAbrir} onAceptar={aceptar} />;
+  return <PantallaPublica cotizacion={cotizacion} taller={vista.taller} catalogo={CATALOGO} pdfHref={`/c/${slug}/pdf`} onAbierta={alAbrir} onAceptar={aceptar} />;
 }
