@@ -33,3 +33,10 @@ pnpm db:migrar (aplica supabase/migrations con SUPABASE_DB_URL) | pnpm db:admin 
 El prototipo sin login vive en /demo; la app real requiere .env.local (ver .env.example).
 Flujo
 Trabaja una fase a la vez. Empieza en modo plan. Al terminar, corre test y typecheck, y resume qué cambió.
+Reparto con Codex (ahorra cuota de Claude)
+Claude planea, define los Gherkin y los tests, y verifica. Codex hace el trabajo largo y mecánico.
+Delegar a Codex: implementar contra tests ya escritos, refactors de varios archivos, tests extra, y la primera revisión de código.
+Se queda en Claude: decisiones de diseño, RLS y migraciones, seguridad, y el visto bueno final.
+Implementar: `codex exec -s workspace-write -C . -o <archivo> "<tarea>"`. Leer o revisar: `-s read-only`.
+Revisión: `/codex:review` y `/codex:adversarial-review`. Tarea larga: `/codex:rescue`.
+Codex lee `AGENTS.md`. Siempre se corren `pnpm test`, `pnpm typecheck` y eslint después de lo que haga Codex.
