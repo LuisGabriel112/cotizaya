@@ -160,9 +160,15 @@ describe("catálogo", () => {
 
 describe("aTaller y aCambiosFila", () => {
   it("aTaller deja fuera el logo vacío", () => {
-    const fila = { nombre: "El Faro", ciudad: "Boca del Río", telefono: "2290000001", condiciones: "50 %", plan: "gratis" as const, logo_url: null };
+    const fila = { nombre: "El Faro", ciudad: "Boca del Río", telefono: "2290000001", condiciones: "50 %", plan: "gratis" as const, logo_url: null, plan_until: null };
     expect(aTaller(fila)).toEqual({ nombre: "El Faro", ciudad: "Boca del Río", telefono: "2290000001", condiciones: "50 %", plan: "gratis" });
     expect(aTaller({ ...fila, logo_url: "https://x/logo.png" }).logoUrl).toBe("https://x/logo.png");
+  });
+
+  it("aTaller lleva la fecha del plan solo si existe", () => {
+    const fila = { nombre: "El Faro", ciudad: "", telefono: "", condiciones: "", plan: "fundador" as const, logo_url: null, plan_until: "2026-11-30" };
+    expect(aTaller(fila).planHasta).toBe("2026-11-30");
+    expect(aTaller({ ...fila, plan_until: null })).not.toHaveProperty("planHasta");
   });
 
   it("aCambiosFila traduce solo lo que viene", () => {

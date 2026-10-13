@@ -45,6 +45,7 @@ export interface Taller {
   telefono: string;
   condiciones: string;
   plan: "gratis" | "fundador";
+  planHasta?: string;
   logoUrl?: string;
 }
 

@@ -17,6 +17,7 @@ vi.mock("@/lib/server/supabase/sesion", () => ({ exigirTaller }));
 vi.mock("@/lib/server/supabase/repositorio", () => ({ RepositorioSupabase: Repositorio }));
 vi.mock("@/lib/cotizaciones/casos", () => ({ crearCasos: () => casos }));
 
+import { CupoAgotado } from "@/lib/plan/cupo";
 import { avisoVisto, crearCotizacion, editarCotizacion, marcarEnviada, quitarPartida, salir } from "./acciones";
 
 const ID = "11111111-1111-4111-8111-111111111111";
@@ -30,8 +31,19 @@ beforeEach(() => {
 describe("acciones de la app", () => {
   it("el repositorio queda acotado al taller de la sesión", async () => {
     casos.crear.mockResolvedValue({ id: ID });
-    expect(await crearCotizacion()).toEqual({ id: ID });
+    expect(await crearCotizacion()).toEqual({ ok: true, cotizacion: { id: ID } });
     expect(Repositorio).toHaveBeenCalledWith(expect.anything(), "w1");
+  });
+
+  // En producción Next oculta el mensaje de los errores de Server Actions: el cupo viaja como dato.
+  it("crear con el cupo agotado regresa el motivo en vez de lanzar", async () => {
+    casos.crear.mockRejectedValue(new CupoAgotado());
+    expect(await crearCotizacion()).toEqual({ ok: false, motivo: "cupo-agotado" });
+  });
+
+  it("crear con otro error sí lanza", async () => {
+    casos.crear.mockRejectedValue(new Error("caída"));
+    await expect(crearCotizacion()).rejects.toThrow("caída");
   });
 
   it("sin taller no llega a los casos", async () => {

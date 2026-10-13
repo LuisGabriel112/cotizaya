@@ -11,6 +11,8 @@ export default defineConfig({
   },
   test: {
     environment: "node",
+    // UTC a propósito: la máquina de desarrollo está en hora de México y ocultaría errores de zona.
+    env: { TZ: "UTC" },
     include: ["src/**/*.test.ts", "supabase/tests/**/*.test.ts"],
     // La base remota tarda más que los tests puros.
     testTimeout: 20_000,

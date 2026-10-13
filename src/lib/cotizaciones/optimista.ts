@@ -1,10 +1,13 @@
 import type { CambiosCotizacion, Accion } from "./estado";
 import type { AccionesCotizaciones } from "./fuente";
 import type { Cotizacion, PartidaGuardada } from "./tipos";
+import { CupoAgotado } from "@/lib/plan/cupo";
+
+export type ResultadoCrear = { ok: true; cotizacion: Cotizacion } | { ok: false; motivo: "cupo-agotado" };
 
 /** Las Server Actions que confirman cada cambio; se inyectan para probar sin red. */
 export interface ServidorCotizaciones {
-  crearCotizacion: () => Promise<Cotizacion>;
+  crearCotizacion: () => Promise<ResultadoCrear>;
   guardarPartida: (id: string, partida: PartidaGuardada) => Promise<PartidaGuardada>;
   quitarPartida: (id: string, partidaId: string) => Promise<void>;
   marcarEnviada: (id: string) => Promise<void>;
@@ -16,14 +19,20 @@ interface Dependencias {
   servidor: ServidorCotizaciones;
   agrupador: { agregar: (id: string, cambios: CambiosCotizacion) => void };
   alFallar: () => void;
+  alAgotarCupo: () => void;
 }
 
 /** Responde al instante con el reductor local y confirma con el servidor detrás. */
-export function crearAccionesOptimistas({ despachar, servidor, agrupador, alFallar }: Dependencias): AccionesCotizaciones {
+export function crearAccionesOptimistas({ despachar, servidor, agrupador, alFallar, alAgotarCupo }: Dependencias): AccionesCotizaciones {
   const atras = (p: Promise<unknown>) => void p.catch(alFallar);
   return {
     crear: async () => {
-      const cotizacion = await servidor.crearCotizacion();
+      const resultado = await servidor.crearCotizacion();
+      if (!resultado.ok) {
+        alAgotarCupo();
+        throw new CupoAgotado();
+      }
+      const { cotizacion } = resultado;
       despachar({ tipo: "crear", cotizacion });
       return cotizacion.id;
     },

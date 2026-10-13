@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { CupoAgotado } from "@/lib/plan/cupo";
 import { crearAccionesOptimistas, type ServidorCotizaciones } from "./optimista";
 import type { Cotizacion, PartidaGuardada } from "./tipos";
 
@@ -9,17 +10,18 @@ const cotizacion = { id: "c1" } as Cotizacion;
 function preparar(servidor: Partial<ServidorCotizaciones> = {}) {
   const despachar = vi.fn();
   const alFallar = vi.fn();
+  const alAgotarCupo = vi.fn();
   const agrupador = { agregar: vi.fn() };
   const completo: ServidorCotizaciones = {
-    crearCotizacion: vi.fn().mockResolvedValue(cotizacion),
+    crearCotizacion: vi.fn().mockResolvedValue({ ok: true, cotizacion }),
     guardarPartida: vi.fn().mockResolvedValue(conFoto),
     quitarPartida: vi.fn().mockResolvedValue(undefined),
     marcarEnviada: vi.fn().mockResolvedValue(undefined),
     avisoVisto: vi.fn().mockResolvedValue(undefined),
     ...servidor,
   };
-  const acciones = crearAccionesOptimistas({ despachar, servidor: completo, agrupador, alFallar });
-  return { acciones, despachar, alFallar, agrupador, servidor: completo };
+  const acciones = crearAccionesOptimistas({ despachar, servidor: completo, agrupador, alFallar, alAgotarCupo });
+  return { acciones, despachar, alFallar, alAgotarCupo, agrupador, servidor: completo };
 }
 
 const tick = () => new Promise((r) => setTimeout(r, 0));
@@ -29,6 +31,16 @@ describe("crearAccionesOptimistas", () => {
     const { acciones, despachar } = preparar();
     expect(await acciones.crear()).toBe("c1");
     expect(despachar).toHaveBeenCalledWith({ tipo: "crear", cotizacion });
+  });
+
+  it("crear sin cupo no despacha, avisa del cupo (no de la señal) y lanza CupoAgotado", async () => {
+    const { acciones, despachar, alFallar, alAgotarCupo } = preparar({
+      crearCotizacion: vi.fn().mockResolvedValue({ ok: false, motivo: "cupo-agotado" }),
+    });
+    await expect(acciones.crear()).rejects.toBeInstanceOf(CupoAgotado);
+    expect(despachar).not.toHaveBeenCalled();
+    expect(alAgotarCupo).toHaveBeenCalledOnce();
+    expect(alFallar).not.toHaveBeenCalled();
   });
 
   it("guardarPartida despacha al instante y luego la partida con foto", async () => {

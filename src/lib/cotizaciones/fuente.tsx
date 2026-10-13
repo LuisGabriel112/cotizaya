@@ -5,6 +5,7 @@ import type { Catalogo } from "./catalogo";
 import type { CambiosCotizacion } from "./estado";
 import type { Rutas } from "./rutas";
 import type { Cotizacion, PartidaGuardada, Taller } from "./tipos";
+import type { Cupo } from "@/lib/plan/cupo";
 
 // Lo que las pantallas necesitan, venga del prototipo (localStorage) o de Supabase.
 
@@ -23,6 +24,7 @@ export interface Fuente {
   cotizaciones: Cotizacion[];
   acciones: AccionesCotizaciones;
   taller: Taller;
+  cupo?: Cupo;
   catalogo: Catalogo;
   rutas: Rutas;
   /** Solo en /demo: vuelve a los datos de ejemplo. */

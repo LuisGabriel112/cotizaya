@@ -3,6 +3,7 @@ import type { CambiosCotizacion } from "@/lib/cotizaciones/estado";
 import type { PartidaConFoto, RepositorioCotizaciones } from "@/lib/cotizaciones/puerto";
 import type { Cotizacion } from "@/lib/cotizaciones/tipos";
 import type { Material, Totales } from "@/lib/quote";
+import { CupoAgotado } from "@/lib/plan/cupo";
 import { aCambiosFila, aCotizacion, aFilaPartida, aMaterial, type FilaMaterial, type FilaQuote } from "./mapeo";
 
 export const SELECT_COTIZACION = "*, quote_items(*)";
@@ -25,7 +26,9 @@ export class RepositorioSupabase implements RepositorioCotizaciones {
   ) {}
 
   async crear(): Promise<Cotizacion> {
-    const fila = sinError(await this.db.from("quotes").insert({ workshop_id: this.workshopId }).select(SELECT_COTIZACION).single<FilaQuote>());
+    const respuesta = await this.db.from("quotes").insert({ workshop_id: this.workshopId }).select(SELECT_COTIZACION).single<FilaQuote>();
+    if (respuesta.error?.code === "CY429") throw new CupoAgotado();
+    const fila = sinError(respuesta);
     return aCotizacion(fila!);
   }
 

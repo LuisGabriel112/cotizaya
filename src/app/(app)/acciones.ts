@@ -5,7 +5,9 @@ import { crearCasos } from "@/lib/cotizaciones/casos";
 import { esquemaCambios, esquemaId, esquemaPartida } from "@/lib/cotizaciones/esquemas";
 import type { CambiosCotizacion } from "@/lib/cotizaciones/estado";
 import type { PartidaConFoto } from "@/lib/cotizaciones/puerto";
-import type { Cotizacion, PartidaGuardada } from "@/lib/cotizaciones/tipos";
+import type { PartidaGuardada } from "@/lib/cotizaciones/tipos";
+import type { ResultadoCrear } from "@/lib/cotizaciones/optimista";
+import { CupoAgotado } from "@/lib/plan/cupo";
 import { clienteServidor } from "@/lib/server/supabase/cliente";
 import { RepositorioSupabase } from "@/lib/server/supabase/repositorio";
 import { exigirTaller } from "@/lib/server/supabase/sesion";
@@ -18,8 +20,13 @@ async function casosDeSesion() {
   return crearCasos(new RepositorioSupabase(db, workshopId));
 }
 
-export async function crearCotizacion(): Promise<Cotizacion> {
-  return (await casosDeSesion()).crear();
+export async function crearCotizacion(): Promise<ResultadoCrear> {
+  try {
+    return { ok: true, cotizacion: await (await casosDeSesion()).crear() };
+  } catch (error) {
+    if (error instanceof CupoAgotado) return { ok: false, motivo: "cupo-agotado" };
+    throw error;
+  }
 }
 
 export async function guardarPartida(quoteId: string, partida: PartidaGuardada): Promise<PartidaConFoto> {

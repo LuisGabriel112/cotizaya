@@ -67,6 +67,7 @@ export interface FilaTaller {
   condiciones: string;
   plan: Taller["plan"];
   logo_url: string | null;
+  plan_until: string | null;
 }
 
 export type FilaPartida = Omit<FilaItem, "id">;
@@ -169,6 +170,7 @@ export function aTaller(t: FilaTaller): Taller {
     condiciones: t.condiciones,
     plan: t.plan,
     ...(t.logo_url ? { logoUrl: t.logo_url } : {}),
+    ...(t.plan_until ? { planHasta: t.plan_until } : {}),
   };
 }
 
@@ -187,9 +189,9 @@ export function aCambiosFila(cambios: CambiosCotizacion): Record<string, unknown
 export interface JsonPublico {
   quote: Omit<FilaQuote, "quote_items">;
   items: FilaItem[];
-  taller: FilaTaller;
+  taller: Omit<FilaTaller, "plan_until"> & Partial<Pick<FilaTaller, "plan_until">>;
 }
 
 export function aVistaPublica(json: JsonPublico): { cotizacion: Cotizacion; taller: Taller } {
-  return { cotizacion: aCotizacion({ ...json.quote, quote_items: json.items }), taller: aTaller(json.taller) };
+  return { cotizacion: aCotizacion({ ...json.quote, quote_items: json.items }), taller: aTaller({ plan_until: null, ...json.taller }) };
 }

@@ -18,7 +18,7 @@ const LIMITE_COTIZACIONES = 200;
 export async function cargarDatosApp(db: SupabaseClient, workshopId: string): Promise<DatosApp> {
   // Un admin ve todo por RLS: cada consulta se acota al taller de la sesión.
   const [taller, materiales, plantillas, cotizaciones] = await Promise.all([
-    db.from("workshops").select("nombre, ciudad, telefono, condiciones, plan, logo_url").eq("id", workshopId).single<FilaTaller>(),
+    db.from("workshops").select("nombre, ciudad, telefono, condiciones, plan, logo_url, plan_until").eq("id", workshopId).single<FilaTaller>(),
     db.from("materials").select("*").eq("workshop_id", workshopId).order("nombre").returns<FilaMaterial[]>(),
     db.from("item_templates").select("*").or(`workshop_id.is.null,workshop_id.eq.${workshopId}`).returns<FilaPlantilla[]>(),
     db.from("quotes").select(SELECT_COTIZACION).eq("workshop_id", workshopId).order("folio", { ascending: false }).limit(LIMITE_COTIZACIONES).returns<FilaQuote[]>(),

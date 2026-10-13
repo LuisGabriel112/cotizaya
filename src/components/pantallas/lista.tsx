@@ -11,49 +11,51 @@ import { ReglaCinta } from "@/components/ui/regla-cinta";
 import { useFuente } from "@/lib/cotizaciones/fuente";
 import { resumir } from "@/lib/cotizaciones/resumen";
 import type { Cotizacion } from "@/lib/cotizaciones/tipos";
+import { avisoDeCupo, cupoAgotado } from "@/lib/plan/cupo";
 import { formatCentavos, formatFecha, formatFolio, formatHora } from "@/lib/format";
 
 export function PantallaLista() {
-  const { listo, cotizaciones, taller, reiniciarDemo } = useFuente();
-  const ordenadas = [...cotizaciones].sort((a, b) => b.folio - a.folio);
-
   return (
     <main className="mx-auto max-w-md px-4 pb-32">
-      <Encabezado titulo="Cotizaciones" />
-      <p className="mt-2 text-base text-tinta-2">
-        {taller.nombre}.{reiniciarDemo && " Taller de ejemplo con datos de prueba."}
-      </p>
-
-      {listo && ordenadas.length === 0 ? (
-        <p className="mt-8 border-y-2 border-tinta py-6 text-lg">Aún no tienes cotizaciones. Haz la primera desde la obra.</p>
-      ) : (
-        <>
-          <ReglaCinta className="mt-5" />
-          <ul aria-busy={!listo}>
-            {ordenadas.map((c) => (
-              <li key={c.id}>
-                <Fila c={c} />
-              </li>
-            ))}
-          </ul>
-        </>
-      )}
-
-      {listo && reiniciarDemo && (
-        <button type="button" onClick={reiniciarDemo} className="mt-8 min-h-14 text-base text-tinta-2 underline">
-          Volver a los datos de ejemplo
-        </button>
-      )}
-
-      <BarraAccion>
-        <BotonNueva />
-      </BarraAccion>
+      <CabeceraLista />
+      <CotizacionesLista />
+      <PieLista />
     </main>
   );
 }
 
+function CabeceraLista() {
+  const { taller, cupo, reiniciarDemo } = useFuente();
+  const aviso = avisoDeCupo(cupo);
+  return <>
+    <Encabezado titulo="Cotizaciones" />
+    <p className="mt-2 text-base text-tinta-2">{taller.nombre}.{reiniciarDemo && " Taller de ejemplo con datos de prueba."}</p>
+    {aviso && <p role="status" className={`mt-5 border-y-2 py-3 text-lg ${cupoAgotado(cupo) ? "border-rojo" : "border-tinta"}`}>{aviso}</p>}
+  </>;
+}
+
+function CotizacionesLista() {
+  const { listo, cotizaciones } = useFuente();
+  if (listo && cotizaciones.length === 0) {
+    return <p className="mt-8 border-y-2 border-tinta py-6 text-lg">Aún no tienes cotizaciones. Haz la primera desde la obra.</p>;
+  }
+  const ordenadas = [...cotizaciones].sort((a, b) => b.folio - a.folio);
+  return <>
+    <ReglaCinta className="mt-5" />
+    <ul aria-busy={!listo}>{ordenadas.map((c) => <li key={c.id}><Fila c={c} /></li>)}</ul>
+  </>;
+}
+
+function PieLista() {
+  const { listo, reiniciarDemo } = useFuente();
+  return <>
+    {listo && reiniciarDemo && <button type="button" onClick={reiniciarDemo} className="mt-8 min-h-14 text-base text-tinta-2 underline">Volver a los datos de ejemplo</button>}
+    <BarraAccion><BotonNueva /></BarraAccion>
+  </>;
+}
+
 function BotonNueva() {
-  const { acciones, rutas } = useFuente();
+  const { acciones, rutas, cupo } = useFuente();
   const router = useRouter();
   const [creando, setCreando] = useState(false);
   const nueva = async () => {
@@ -65,7 +67,7 @@ function BotonNueva() {
     }
   };
   return (
-    <Boton onClick={nueva} disabled={creando}>
+    <Boton onClick={nueva} disabled={creando || cupoAgotado(cupo)}>
       Nueva cotización
     </Boton>
   );

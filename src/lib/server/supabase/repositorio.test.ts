@@ -1,12 +1,13 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { describe, expect, it } from "vitest";
 import type { PartidaConFoto } from "@/lib/cotizaciones/puerto";
+import { CupoAgotado } from "@/lib/plan/cupo";
 import { RepositorioSupabase } from "./repositorio";
 
 type Llamada = [string, unknown[]];
 
 /** Query builder encadenable que anota cada método y al final resuelve con `resultado`. */
-function dbFalsa(resultado: { data: unknown; error: { message: string } | null } = { data: null, error: null }) {
+function dbFalsa(resultado: { data: unknown; error: { message: string; code?: string } | null } = { data: null, error: null }) {
   const llamadas: Llamada[] = [];
   const cadena: object = new Proxy(
     {},
@@ -99,6 +100,17 @@ describe("RepositorioSupabase", () => {
     const { repo } = dbFalsa();
     expect(await repo.porId("q1")).toBeNull();
     expect(await repo.material("m1")).toBeNull();
+  });
+
+  it("crear con el cupo del mes agotado lanza CupoAgotado", async () => {
+    const { repo } = dbFalsa({ data: null, error: { message: "limite-mensual", code: "CY429" } });
+    await expect(repo.crear()).rejects.toBeInstanceOf(CupoAgotado);
+  });
+
+  it("crear con otro error de la base no lo disfraza de cupo", async () => {
+    const { repo } = dbFalsa({ data: null, error: { message: "caída", code: "08006" } });
+    await expect(repo.crear()).rejects.toThrow("caída");
+    await expect(repo.crear()).rejects.not.toBeInstanceOf(CupoAgotado);
   });
 
   it("un error de la base se vuelve excepción", async () => {

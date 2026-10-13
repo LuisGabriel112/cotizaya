@@ -237,3 +237,76 @@ suite("folio, enlace público y primer ingreso", () => {
     expect(rows).toHaveLength(6);
   });
 });
+
+suite("Cupo mensual del plan gratis", () => {
+  const db = nuevaConexion();
+  const LIMITE_MENSUAL = "CY429";
+  let dueno: Dueno;
+  let taller: string;
+
+  const intentarCrear = () => codigoDeError(db, "insert into public.quotes (workshop_id) values ($1)", [taller]);
+
+  async function crearComoDueno(n: number): Promise<void> {
+    for (let i = 0; i < n; i++) await db.query("insert into public.quotes (workshop_id) values ($1)", [taller]);
+  }
+
+  async function ponerPlan(plan: string, hasta: string | null): Promise<void> {
+    await db.query("update public.workshops set plan = $2, plan_until = $3::date where id = $1", [taller, plan, hasta]);
+  }
+
+  beforeAll(() => db.connect());
+  afterAll(() => db.end());
+  beforeEach(async () => {
+    await db.query("begin");
+    dueno = nuevoDueno();
+    taller = await crearTallerCon(db, dueno, "El Faro");
+  });
+  afterEach(() => db.query("rollback"));
+
+  it("en gratis la sexta del mes se rechaza y no gasta folio", async () => {
+    await comoUsuario(db, dueno);
+    await crearComoDueno(5);
+    expect(await intentarCrear()).toBe(LIMITE_MENSUAL);
+    await comoPostgres(db);
+    const { rows } = await db.query("select siguiente_folio from public.workshops where id = $1", [taller]);
+    expect(rows[0]).toEqual({ siguiente_folio: 6 });
+  });
+
+  it("las del mes pasado no cuentan", async () => {
+    await crearComoDueno(5);
+    await db.query("update public.quotes set created_at = now() - interval '40 days' where workshop_id = $1", [taller]);
+    await comoUsuario(db, dueno);
+    expect(await intentarCrear()).toBeNull();
+  });
+
+  it("fundador vigente o sin fecha no tiene límite", async () => {
+    await ponerPlan("fundador", null);
+    await crearComoDueno(5);
+    await comoUsuario(db, dueno);
+    expect(await intentarCrear()).toBeNull();
+    await comoPostgres(db);
+    await db.query("update public.workshops set plan_until = public.hoy_en_mexico() where id = $1", [taller]);
+    await comoUsuario(db, dueno);
+    expect(await intentarCrear()).toBeNull();
+  });
+
+  it("fundador vencido vuelve al límite gratis", async () => {
+    await crearComoDueno(5);
+    await db.query("update public.workshops set plan = 'fundador', plan_until = public.hoy_en_mexico() - 1 where id = $1", [taller]);
+    await comoUsuario(db, dueno);
+    expect(await intentarCrear()).toBe(LIMITE_MENSUAL);
+  });
+
+  it("el cupo es por taller", async () => {
+    await crearComoDueno(5);
+    const otro = nuevoDueno();
+    const tallerOtro = await crearTallerCon(db, otro, "La Costa");
+    await comoUsuario(db, otro);
+    expect(await codigoDeError(db, "insert into public.quotes (workshop_id) values ($1)", [tallerOtro])).toBeNull();
+  });
+
+  it("nadie llama directo a las funciones del cupo", async () => {
+    await comoUsuario(db, dueno);
+    expect(await codigoDeError(db, "select public.plan_de_pago_vigente('fundador', null)")).toBe(PERMISO_NEGADO);
+  });
+});
