@@ -310,3 +310,96 @@ suite("Cupo mensual del plan gratis", () => {
     expect(await codigoDeError(db, "select public.plan_de_pago_vigente('fundador', null)")).toBe(PERMISO_NEGADO);
   });
 });
+
+suite("Pagos de Mercado Pago", () => {
+  const db = nuevaConexion();
+  let dueno: Dueno;
+  let taller: string;
+
+  async function registrar(externalId: string, status: string, periodo = "mes", metodo = "tarjeta"): Promise<void> {
+    await db.query("set local role service_role");
+    await db.query("select public.registrar_pago($1, $2, $3, $4, $5, $6)", [taller, externalId, metodo, periodo === "mes" ? 9900 : 99000, periodo, status]);
+    await db.query("reset role");
+  }
+
+  async function plan(): Promise<{ plan: string; dias: number | null }> {
+    const { rows } = await db.query(
+      "select plan, plan_until - public.hoy_en_mexico() as dias from public.workshops where id = $1",
+      [taller],
+    );
+    return rows[0];
+  }
+
+  async function diasDeUnMesDesde(desdeDias: number): Promise<number> {
+    const { rows } = await db.query<{ d: number }>(
+      "select ((public.hoy_en_mexico() + $1::int + interval '1 month')::date - public.hoy_en_mexico()) as d",
+      [desdeDias],
+    );
+    return rows[0]!.d;
+  }
+
+  beforeAll(() => db.connect());
+  afterAll(() => db.end());
+  beforeEach(async () => {
+    await db.query("begin");
+    dueno = nuevoDueno();
+    taller = await crearTallerCon(db, dueno, "El Faro");
+  });
+  afterEach(() => db.query("rollback"));
+
+  it("un pago aprobado activa fundador por un mes y queda registrado", async () => {
+    await registrar("mp-1", "approved");
+    expect(await plan()).toEqual({ plan: "fundador", dias: await diasDeUnMesDesde(0) });
+    const { rows } = await db.query("select metodo, monto_centavos, periodo, status from public.payments where external_id = 'mp-1'");
+    expect(rows).toEqual([{ metodo: "tarjeta", monto_centavos: 9900, periodo: "mes", status: "approved" }]);
+  });
+
+  it("OXXO pendiente no activa; al aprobarse sí, con una sola fila", async () => {
+    await registrar("mp-2", "pending", "mes", "oxxo");
+    expect(await plan()).toEqual({ plan: "gratis", dias: null });
+    await registrar("mp-2", "approved", "mes", "oxxo");
+    expect((await plan()).plan).toBe("fundador");
+    const { rows } = await db.query("select status from public.payments where external_id = 'mp-2'");
+    expect(rows).toEqual([{ status: "approved" }]);
+  });
+
+  it("una notificación repetida no extiende dos veces", async () => {
+    await registrar("mp-3", "approved");
+    await registrar("mp-3", "approved");
+    expect((await plan()).dias).toBe(await diasDeUnMesDesde(0));
+  });
+
+  it("pagar antes de vencer suma al tiempo que queda", async () => {
+    await db.query("update public.workshops set plan = 'fundador', plan_until = public.hoy_en_mexico() + 10 where id = $1", [taller]);
+    await registrar("mp-4", "approved");
+    expect((await plan()).dias).toBe(await diasDeUnMesDesde(10));
+  });
+
+  it("pagar ya vencido cuenta desde hoy", async () => {
+    await db.query("update public.workshops set plan = 'fundador', plan_until = public.hoy_en_mexico() - 10 where id = $1", [taller]);
+    await registrar("mp-5", "approved");
+    expect((await plan()).dias).toBe(await diasDeUnMesDesde(0));
+  });
+
+  it("un año extiende un año", async () => {
+    await registrar("mp-6", "approved", "anio");
+    const { rows } = await db.query<{ d: number }>(
+      "select ((public.hoy_en_mexico() + interval '1 year')::date - public.hoy_en_mexico()) as d",
+    );
+    expect((await plan()).dias).toBe(rows[0]!.d);
+  });
+
+  it("un fundador sin fecha se queda sin fecha", async () => {
+    await db.query("update public.workshops set plan = 'fundador', plan_until = null where id = $1", [taller]);
+    await registrar("mp-7", "approved");
+    expect(await plan()).toEqual({ plan: "fundador", dias: null });
+  });
+
+  it("el dueño ni el anónimo pueden registrar pagos", async () => {
+    const llamada = "select public.registrar_pago($1, 'x', 'tarjeta', 9900, 'mes', 'approved')";
+    await comoUsuario(db, dueno);
+    expect(await codigoDeError(db, llamada, [taller])).toBe(PERMISO_NEGADO);
+    await comoAnonimo(db);
+    expect(await codigoDeError(db, llamada, [taller])).toBe(PERMISO_NEGADO);
+  });
+});

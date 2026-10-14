@@ -25,12 +25,14 @@ export function PantallaLista() {
 }
 
 function CabeceraLista() {
-  const { taller, cupo, reiniciarDemo } = useFuente();
+  const { taller, cupo, rutas, reiniciarDemo } = useFuente();
   const aviso = avisoDeCupo(cupo);
   return <>
     <Encabezado titulo="Cotizaciones" />
     <p className="mt-2 text-base text-tinta-2">{taller.nombre}.{reiniciarDemo && " Taller de ejemplo con datos de prueba."}</p>
-    {aviso && <p role="status" className={`mt-5 border-y-2 py-3 text-lg ${cupoAgotado(cupo) ? "border-rojo" : "border-tinta"}`}>{aviso}</p>}
+    {aviso && <p role="status" className={`mt-5 border-y-2 py-3 text-lg ${cupoAgotado(cupo) ? "border-rojo" : "border-tinta"}`}>
+      {aviso} {rutas.plan && <Link href={rutas.plan} className="inline-flex min-h-14 items-center font-semibold underline">Pasar a fundador</Link>}
+    </p>}
   </>;
 }
 
