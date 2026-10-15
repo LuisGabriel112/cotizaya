@@ -24,5 +24,5 @@ export async function proxy(request: NextRequest) {
 
 // /demo y /c/[slug] quedan fuera: el prototipo y el cliente del taller no tienen cuenta.
 export const config = {
-  matcher: ["/cotizaciones/:path*", "/admin/:path*", "/entrar"],
+  matcher: ["/cotizaciones/:path*", "/precios/:path*", "/admin/:path*", "/entrar"],
 };

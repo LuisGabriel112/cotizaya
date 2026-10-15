@@ -1,6 +1,5 @@
-import { randomInt, randomUUID } from "node:crypto";
-import { Client } from "pg";
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
+import type { Client } from "pg";
+import { afterAll, afterEach, beforeAll, beforeEach, expect, it } from "vitest";
 import {
   codigoDeError,
   comoAnonimo,
@@ -11,22 +10,11 @@ import {
   crearUsuario,
   type Dueno,
 } from "./pg-sesion";
-import { opcionesSsl } from "../scripts/migraciones";
+import { nuevaConexion, nuevoDueno, suiteDeBase as suite } from "./conexion";
 
 // Corre contra la base real de Supabase, dentro de una transacción que siempre se revierte.
-const url = process.env.SUPABASE_DB_URL;
-const suite = url ? describe : describe.skip;
-if (!url) console.warn("SUPABASE_DB_URL no está definida: se saltan los tests de RLS.");
 
 const PERMISO_NEGADO = "42501";
-
-function nuevoDueno(): Dueno {
-  return { id: randomUUID(), telefono: `52999${String(randomInt(0, 10_000_000)).padStart(7, "0")}` };
-}
-
-function nuevaConexion(): Client {
-  return new Client({ connectionString: url, ssl: opcionesSsl(url ?? "") });
-}
 
 async function agregarPartida(db: Client, tallerId: string, quoteId: string): Promise<void> {
   await db.query(
