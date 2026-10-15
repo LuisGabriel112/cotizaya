@@ -3,7 +3,7 @@ import { interpretarPago, type PagoMp, type RegistroPago } from "@/lib/pagos/pla
 interface EntradaWebhook { tipo: string; dataId: string; firma: string; requestId: string }
 export interface DependenciasWebhook {
   firmaValida: (entrada: Pick<EntradaWebhook, "firma" | "requestId" | "dataId">) => boolean;
-  obtenerPago: (id: string) => Promise<PagoMp>;
+  obtenerPago: (id: string) => Promise<PagoMp | null>;
   registrarPago: (registro: RegistroPago) => Promise<void>;
 }
 
@@ -12,7 +12,12 @@ export async function procesarNotificacion(entrada: EntradaWebhook, deps: Depend
   if (!deps.firmaValida({ firma: entrada.firma, requestId: entrada.requestId, dataId: entrada.dataId })) return 401;
   if (entrada.tipo !== "payment") return 200;
   try {
-    const resultado = interpretarPago(await deps.obtenerPago(entrada.dataId));
+    const pago = await deps.obtenerPago(entrada.dataId);
+    if (!pago) {
+      console.warn(`Pago ${entrada.dataId} no existe en Mercado Pago`);
+      return 200;
+    }
+    const resultado = interpretarPago(pago);
     if (!resultado.ok) {
       console.warn(resultado.motivo);
       return 200;

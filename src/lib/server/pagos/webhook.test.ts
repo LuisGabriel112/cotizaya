@@ -63,6 +63,12 @@ describe("procesarNotificacion", () => {
     expect(deps.registrarPago).not.toHaveBeenCalled();
   });
 
+  it("pago que Mercado Pago no conoce: 200 para que no reintente, sin registrar", async () => {
+    const deps = preparar({ obtenerPago: vi.fn().mockResolvedValue(null) });
+    expect(await procesarNotificacion(ENTRADA, deps)).toBe(200);
+    expect(deps.registrarPago).not.toHaveBeenCalled();
+  });
+
   it("si la API o la base fallan: 500 para que Mercado Pago reintente", async () => {
     const sinApi = preparar({ obtenerPago: vi.fn().mockRejectedValue(new Error("caída")) });
     expect(await procesarNotificacion(ENTRADA, sinApi)).toBe(500);

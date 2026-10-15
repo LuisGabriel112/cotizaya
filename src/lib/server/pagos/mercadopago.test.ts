@@ -70,6 +70,16 @@ describe("pasarela de Mercado Pago", () => {
 
   it("obtenerPago sin referencia la deja en null", async () => {
     obtener.mockResolvedValue({ id: 1, status: "approved", transaction_amount: 99, currency_id: "MXN", payment_type_id: "ticket" });
-    expect((await pasarela().obtenerPago("1")).externalReference).toBeNull();
+    expect((await pasarela().obtenerPago("1"))?.externalReference).toBeNull();
+  });
+
+  it("obtenerPago devuelve null si Mercado Pago responde 404", async () => {
+    obtener.mockRejectedValue({ status: 404, message: "Payment not found" });
+    expect(await pasarela().obtenerPago("123456")).toBeNull();
+  });
+
+  it("obtenerPago propaga cualquier otro error para que el webhook pida reintento", async () => {
+    obtener.mockRejectedValue({ status: 500, message: "caída" });
+    await expect(pasarela().obtenerPago("1")).rejects.toMatchObject({ status: 500 });
   });
 });

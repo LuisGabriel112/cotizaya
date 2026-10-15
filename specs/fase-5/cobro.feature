@@ -55,6 +55,15 @@ Característica: Pagar el plan fundador con Mercado Pago
     Entonces no se activa el plan
     Y responde 200 para que Mercado Pago no reintente
 
+  Escenario: Pago que Mercado Pago no conoce se ignora sin reintentos
+    Cuando llega una notificación firmada con un id de pago que Mercado Pago no encuentra
+    Entonces no se activa el plan
+    Y responde 200 para que Mercado Pago no reintente
+
+  Escenario: Si Mercado Pago o la base fallan, se pide reintento
+    Cuando llega una notificación firmada y la consulta o el registro fallan
+    Entonces responde 500 para que Mercado Pago reintente
+
   Escenario: Notificaciones que no son de pagos se ignoran
     Cuando llega una notificación de tipo "merchant_order"
     Entonces responde 200 sin consultar nada

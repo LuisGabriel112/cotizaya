@@ -13,6 +13,12 @@ function instancia<T>(Constructor: new (cliente: MercadoPagoConfig) => T, client
   }
 }
 
+// Un 404 no se arregla reintentando; cualquier otro error sí puede ser pasajero.
+function noEncontradoComoNulo(error: unknown): null {
+  if ((error as { status?: number } | null)?.status === 404) return null;
+  throw error;
+}
+
 export function crearPasarela({ accessToken, urlApp }: Configuracion) {
   const cliente = new MercadoPagoConfig({ accessToken });
   const preferencias = instancia(Preference, cliente);
@@ -29,8 +35,9 @@ export function crearPasarela({ accessToken, urlApp }: Configuracion) {
       if (!respuesta.init_point) throw new Error("Mercado Pago no devolvió URL de pago");
       return respuesta.init_point;
     },
-    async obtenerPago(id: string): Promise<PagoMp> {
-      const pago = await pagos.get({ id });
+    async obtenerPago(id: string): Promise<PagoMp | null> {
+      const pago = await pagos.get({ id }).catch(noEncontradoComoNulo);
+      if (!pago) return null;
       return { id: pago.id!, status: pago.status!, transactionAmount: pago.transaction_amount!, currencyId: pago.currency_id!, paymentTypeId: pago.payment_type_id!, externalReference: pago.external_reference ?? null };
     },
   };
