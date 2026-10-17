@@ -96,12 +96,14 @@ Un prompt por sesión, en modo plan. Commit al final de cada fase.
 
 ## Criterios de terminado
 
-- [ ] Taller real crea y envía cotización de 3 partidas en menos de 3 min, sin explicación.
-- [ ] Totales coinciden al centavo con cálculo a mano en 10 casos.
-- [ ] PDF legible en blanco y negro y menor de 300 KB.
-- [ ] Interfaz legible bajo el sol en Android de gama media.
-- [ ] Un taller no ve datos de otro (test RLS en verde).
-- [ ] Desde /admin se configura taller nuevo con logo y catálogo en menos de 10 min.
-- [ ] Pago OXXO activa el plan automáticamente al confirmarse.
-- [ ] Pantallas principales pasaron revision-anti-ia.
-- [ ] Lighthouse móvil ≥ 90 en rendimiento y accesibilidad.
+Se marca solo lo que tiene prueba o medición; lo demás queda con la razón de por qué no.
+
+- [ ] Taller real crea y envía cotización de 3 partidas en menos de 3 min, sin explicación. — falta el primer taller real.
+- [ ] Totales coinciden al centavo con cálculo a mano en 10 casos. — los 10 casos de `src/lib/quote/casos.test.ts` están en verde, pero con precios del catálogo de ejemplo; faltan los de un taller real.
+- [x] PDF legible en blanco y negro y menor de 300 KB. — tamaño medido en `src/lib/server/pdf/generar.test.ts`; sin color salvo el sello del folio.
+- [ ] Interfaz legible bajo el sol en Android de gama media. — falta medirla en celular.
+- [x] Un taller no ve datos de otro (test RLS en verde). — `supabase/tests/rls.test.ts`.
+- [ ] Desde /admin se configura taller nuevo con logo y catálogo en menos de 10 min. — falta cronometrarlo.
+- [ ] Pago OXXO activa el plan automáticamente al confirmarse. — webhook y firma probados; falta un pago real.
+- [x] Pantallas principales pasaron revision-anti-ia. — incluida la landing de la fase 6.
+- [ ] Lighthouse móvil ≥ 90 en rendimiento y accesibilidad. — falta correrlo en `/`.

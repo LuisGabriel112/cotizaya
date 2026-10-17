@@ -31,7 +31,7 @@ export function HojaCotizacion({ cotizacion: c, resumen, taller, catalogo }: Pro
         </div>
       </header>
 
-      <div className="mt-5 flex items-start justify-between gap-3">
+      <div className="mt-5 flex flex-wrap items-start justify-between gap-3">
         <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-base">
           <dt className="text-tinta-2">Para</dt>
           <dd className={c.cliente ? "font-medium" : "text-tinta-2"}>{c.cliente || "Sin nombre"}</dd>

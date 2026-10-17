@@ -1,6 +1,6 @@
 # Continuar Cotiza Ya en otra máquina
 
-Estado al 2026-10-15. Rama `main`, sincronizada con `origin/main`. Producción: https://cotizaya-gray.vercel.app
+Estado al 2026-10-16. Rama `main`, sincronizada con `origin/main`. Producción: https://cotizaya-gray.vercel.app
 
 ## Arrancar
 
@@ -16,15 +16,20 @@ Estado al 2026-10-15. Rama `main`, sincronizada con `origin/main`. Producción: 
 - Cobro del plan fundador con Mercado Pago (webhook firmado, 200 si MP no conoce el pago). Credenciales reales activas en Vercel.
 - Catálogo editable en `/precios`.
 - Login por teléfono con OTP de prueba `123456`.
+- Landing en `/` (fase 6): hero con cotización real que el visitante llena y manda el total; con sesión redirige a `/cotizaciones`. Especificación en `specs/fase-6/landing.feature`.
 
 ## Falta para el MVP (en este orden)
 
-1. Marcar en el panel de avance los pendientes ya cumplidos.
-2. Fase 6: landing con hero de cotización real (Gherkin, tests, implementación).
-3. Tests de `proveedor.tsx`, `/admin` y `/entrar`.
-4. Medir en celular: cotizar en menos de 3 min, legibilidad bajo el sol, Lighthouse móvil >= 90, descarga del PDF.
-5. Pago real de $99 (reembolsable) para confirmar que el plan se activa.
-6. SMS reales (ver decisiones abiertas).
+1. Medir en celular: cotizar en menos de 3 min, legibilidad bajo el sol, Lighthouse móvil >= 90 en `/`, descarga del PDF.
+2. Tests de `proveedor.tsx`, `/admin` y `/entrar`.
+3. Pago real de $99 (reembolsable) para confirmar que el plan se activa.
+4. SMS reales (ver decisiones abiertas).
+
+Los criterios de terminado, con lo que ya tiene prueba y lo que no, están en `docs/GUIA.md`.
+
+Flecos conocidos de la landing (auditados, 18/20, ninguno bloquea):
+- A 360 x 640 la barra fija de "Cotizar gratis" tapa el texto de apoyo que va debajo del boton ("Pon las dos medidas...", "Precio de ejemplo...") y la hoja empieza 19 px abajo del pliegue. Los controles si quedan tocables sin scroll (hay prueba e2e).
+- El sello del folio va en rojo a 4.50:1: conforme a DESIGN.md para texto grande, pero es el unico texto de la pantalla por debajo de 7:1.
 
 ## Decisiones abiertas
 

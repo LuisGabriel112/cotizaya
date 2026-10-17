@@ -35,7 +35,7 @@ export function RenglonPartida({ descripcion, anchoCm, altoCm, cantidad, unidad,
         {croquis && <Croquis tipo={croquis} className="h-5 w-6 shrink-0" />}
         {descripcion}
       </span>
-      <span className="flex items-baseline justify-between gap-4">
+      <span className="flex flex-wrap items-baseline justify-between gap-x-4">
         <span className="num text-tinta-2">{medidas}</span>
         {resultado.ok ? (
           <span className="num text-right font-bold">{formatCentavos(resultado.importeCentavos)}</span>

@@ -21,9 +21,9 @@ export function Total({ subtotalCentavos, descuentoPct, descuentoCentavos, ivaCe
           {conIva && <Fila etiqueta="IVA 16 %" monto={formatCentavos(ivaCentavos)} />}
         </dl>
       )}
-      <div className="flex items-baseline justify-between gap-4 border-t-[6px] border-double border-tinta pt-2">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-4 border-t-[6px] border-double border-tinta pt-2">
         <span className="titulo text-2xl">Total</span>
-        <span className="num text-right text-[2rem] leading-tight font-bold" data-testid="total">
+        <span className="num text-right text-[min(2rem,12vw)] leading-tight font-bold" data-testid="total">
           {formatCentavos(totalCentavos)}
         </span>
       </div>
@@ -33,7 +33,7 @@ export function Total({ subtotalCentavos, descuentoPct, descuentoCentavos, ivaCe
 
 function Fila({ etiqueta, monto }: { etiqueta: string; monto: string }) {
   return (
-    <div className="flex items-baseline justify-between gap-4">
+    <div className="flex flex-wrap items-baseline justify-between gap-x-4">
       <dt>{etiqueta}</dt>
       <dd className="num text-right">{monto}</dd>
     </div>

@@ -255,7 +255,8 @@ Herramientas de taller: firmes, grandes, de borde de tinta. Se presionan, no bri
 - **Secondary:** papel con texto en tinta; al presionar pasa a papel viejo.
 - **Press:** baja 2 px en 75 ms. No hay estado hover propio: es una app de pulgar.
 - **Focus:** contorno de 3 px de tinta con 2 px de separación (global).
-- **Disabled:** papel viejo, borde y texto en tinta corrida, sin hundirse.
+- **Disabled:** papel viejo, borde y texto en tinta corrida, sin hundirse. Donde el botón explica por qué no procede (la demostración de la landing), va con `aria-disabled` y sigue siendo enfocable.
+- **Selección única** (elegir el trabajo): el elegido se invierte a tinta con el rótulo en papel. El salto papel → papel viejo es de 1.125:1 y no basta para señalar estado por sí solo; se reserva para cuando lo acompaña otra señal (el `?` del renglón en curso, el texto en tinta corrida del deshabilitado).
 - **Destructiva:** "Quitar esta partida" es un rótulo rojo subrayado de 1.25rem, no un botón relleno.
 
 ### Barra de acción
@@ -313,6 +314,7 @@ Encabezado de pantalla: enlace de regreso de 56 px con flecha de trazo propio, r
 - **Do** diseña primero en 360 px, con todo lo tocable de al menos 56 px (`min-h-14`) y la acción principal fija abajo.
 - **Do** incluye al menos una firma (folio, cinta de estado, regla de cinta métrica) en cada pantalla principal.
 - **Do** en captura, muestra una sola pregunta en rótulo de 2.5rem y deja que el campo vivo sea el número más grande.
+- **Do** acompaña todo estado marcado con papel viejo de una segunda señal (texto, borde, `?`): el color solo no llega a 3:1.
 - **Do** limita el movimiento a `caer` (solo con `motion-safe`) y al hundido de 2 px al presionar.
 
 ### Don't:

@@ -1,9 +1,7 @@
-import type { Material, Unidad } from "@/lib/quote";
+import type { Material } from "@/lib/quote";
 import { parsearPrecioCentavos } from "./csv";
 
-export function etiquetaUnidad(unidad: Unidad): string {
-  return { m2: "por m²", ml: "por metro", pieza: "por pieza" }[unidad];
-}
+export { etiquetaUnidad } from "./unidades";
 
 export function agruparPorLinea<T extends Material>(materiales: readonly T[]): { linea: string; materiales: T[] }[] {
   const lineas = new Map<string, T[]>();
