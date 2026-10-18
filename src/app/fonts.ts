@@ -2,7 +2,7 @@ import { Barlow, Barlow_Condensed, JetBrains_Mono } from "next/font/google";
 
 export const display = Barlow_Condensed({
   subsets: ["latin"],
-  weight: ["600", "700", "800"],
+  weight: ["700", "800"],
   display: "swap",
   variable: "--ff-display",
 });
