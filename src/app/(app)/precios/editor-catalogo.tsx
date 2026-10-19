@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useReducer, useRef, type Dispatch } from "react";
+import { Guia } from "@/components/guia/guia";
 import type { MaterialGuardado, ResultadoCatalogo } from "@/lib/catalogo/casos";
 import { ejecutarOperacion, ESTADO_INICIAL, reducirEditor, type AccionEditor } from "@/lib/catalogo/editor";
 import { agregarMaterial, cambiarPrecio, quitarMaterial } from "./acciones";
@@ -36,6 +37,7 @@ export function EditorCatalogo({ grupos }: { grupos: { linea: string; materiales
   const cancelar = () => enviar({ tipo: "cancelar" });
   return <>
     {pantalla.tipo === "lista" && <Lista grupos={grupos} abrir={abrir} abrirNuevo={abrirNuevo} />}
+    {pantalla.tipo === "lista" && <Guia id="precios" />}
     {pantalla.tipo === "precio" && <FormularioPrecio material={pantalla.material} precio={pantalla.precio} cambiar={(precio) => enviar({ tipo: "cambiar-precio", precio })}
       error={estado.error} ocupado={!!estado.operacion} progreso={estado.operacion} cancelar={cancelar}
       quitar={() => { if (window.confirm("¿Quitar este material?")) void ejecutar(() => quitarMaterial(pantalla.material.id), "Quitando…"); }}

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Encabezado } from "@/components/encabezado";
+import { Guia } from "@/components/guia/guia";
 import { BarraAccion } from "@/components/ui/barra-accion";
 import { Boton } from "@/components/ui/boton";
 import { Folio } from "@/components/ui/folio";
@@ -38,24 +39,18 @@ export function PantallaCaptura() {
 
 /** Al enviar el formulario de la pregunta: a qué paso se sigue, o guardar la partida. */
 function siguiente(paso: Paso): Paso | "guardar" | null {
+  if (esDato(paso)) return TRABAJO;
+  if (paso.tipo === "trabajo") return null;
   if (paso.tipo === "ancho") return parsearCm(paso.b.ancho) !== null ? { tipo: "alto", b: paso.b } : null;
-  if (paso.tipo === "alto" || paso.tipo === "piezas") return listaParaGuardar(paso.b, paso.tipo) ? "guardar" : null;
-  return esDato(paso) ? TRABAJO : null;
+  return listaParaGuardar(paso.b, paso.tipo) ? "guardar" : null;
 }
 
-function Conversacion({ c }: { c: Cotizacion }) {
+function useConversacion(c: Cotizacion) {
   const { acciones, catalogo } = useFuente();
   const [paso, setPaso] = useState<Paso>(TRABAJO);
-  const preguntaRef = useRef<HTMLElement>(null);
   // La partida que se está contestando cae a la hoja desde el primer número, con el total al día.
   const borrador = "b" in paso ? paso.b : undefined;
   const resumen = resumir(borrador ? conBorrador(c, borrador) : c, catalogo);
-
-  // Cada respuesta baja la vista a la siguiente pregunta, como en un chat.
-  useEffect(() => {
-    preguntaRef.current?.scrollIntoView({ block: "end", behavior: "smooth" });
-  }, [paso.tipo, c.partidas.length]);
-
   const medir = (b: Borrador) => setPaso({ tipo: primerPaso(b, catalogo), b });
   const corregir = (p: PartidaGuardada) => medir(borrador?.partidaId === p.id ? borrador : borradorDePartida(p));
   const enviar = (e: FormEvent) => {
@@ -64,9 +59,23 @@ function Conversacion({ c }: { c: Cotizacion }) {
     if (sigue === "guardar" && borrador) acciones.guardarPartida(c.id, aGuardada(borrador));
     if (sigue) setPaso(sigue === "guardar" ? TRABAJO : sigue);
   };
+  return { paso, setPaso, borrador, resumen, medir, corregir, enviar };
+}
 
-  return (
-    <main className="mx-auto max-w-md px-4 pb-32">
+function useDesplazarPregunta(tipo: Paso["tipo"], partidas: number) {
+  const preguntaRef = useRef<HTMLElement>(null);
+  // Cada respuesta baja la vista a la siguiente pregunta, como en un chat.
+  useEffect(() => {
+    const quieto = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    preguntaRef.current?.scrollIntoView({ block: "end", behavior: quieto ? "auto" : "smooth" });
+  }, [tipo, partidas]);
+  return preguntaRef;
+}
+
+function Conversacion({ c }: { c: Cotizacion }) {
+  const { paso, setPaso, borrador, resumen, medir, corregir, enviar } = useConversacion(c);
+  const preguntaRef = useDesplazarPregunta(paso.tipo, c.partidas.length);
+  return <main className="mx-auto max-w-md px-4 pb-32">
       <EncabezadoCaptura c={c} />
       <HojaCaptura c={c} resumen={resumen} borrador={borrador} onCliente={() => setPaso({ tipo: "cliente" })} onPartida={corregir} />
       <section ref={preguntaRef} aria-live="polite" className="mt-8 scroll-mb-32 border-t-2 border-tinta pt-4">
@@ -75,8 +84,10 @@ function Conversacion({ c }: { c: Cotizacion }) {
         </form>
       </section>
       <BarraCaptura c={c} paso={paso} />
-    </main>
-  );
+      {paso.tipo === "trabajo" && c.partidas.length === 0 && <Guia key="captura" id="captura" />}
+      {paso.tipo === "trabajo" && c.partidas.length > 0 && <Guia key="partida" id="partida" />}
+      {paso.tipo === "ancho" && <Guia id="medida" />}
+    </main>;
 }
 
 function EncabezadoCaptura({ c }: { c: Cotizacion }) {
@@ -97,62 +108,40 @@ function HojaCaptura({ c, resumen, borrador, onCliente, onPartida }: PropsHoja) 
   const { totales } = resumen;
   return (
     <section aria-label="Hoja de la cotización" className="mt-4">
-      <button type="button" onClick={onCliente} className="flex min-h-14 w-full items-baseline gap-3 text-left">
+      <button data-guia="cliente" type="button" onClick={onCliente} className="flex min-h-14 w-full items-baseline gap-3 text-left">
         <span className="text-tinta-2">Para</span>
         <span className={c.cliente ? "font-semibold" : "text-tinta-2 underline"}>{c.cliente || "Poner nombre del cliente"}</span>
       </button>
       <ReglaCinta className="mt-1" />
       <RenglonesCaptura resumen={resumen} borrador={borrador} onPartida={onPartida} />
-      <div className="mt-3">
-        <Total
-          subtotalCentavos={totales.subtotalCentavos}
-          descuentoPct={c.descuentoPct}
-          descuentoCentavos={totales.descuentoCentavos}
-          ivaCentavos={totales.ivaCentavos}
-          conIva={c.conIva}
-          totalCentavos={totales.totalCentavos}
-        />
+      <div data-guia="total" className="mt-3">
+        <Total {...totales} descuentoPct={c.descuentoPct} conIva={c.conIva} />
       </div>
     </section>
   );
 }
 
 function RenglonesCaptura({ resumen, borrador, onPartida }: Pick<PropsHoja, "resumen" | "borrador" | "onPartida">) {
-  const { catalogo } = useFuente();
   if (resumen.renglones.length === 0) {
     return <p className="border-b border-dashed border-aluminio py-4 text-tinta-2">Aún sin partidas. Elige el trabajo aquí abajo.</p>;
   }
-  return (
-    <ul>
-      {resumen.renglones.map(({ partida, resultado }) => {
-        const enCurso = borrador?.partidaId === partida.id;
-        const material = catalogo.materialDe(partida);
-        return (
-          <li key={partida.id} className="motion-safe:animate-[caer_220ms_cubic-bezier(0.16,1,0.3,1)]">
-            <button
-              type="button"
-              onClick={() => onPartida(partida)}
-              aria-label={`Corregir ${partida.descripcion}`}
-              aria-current={enCurso ? "true" : undefined}
-              className="block w-full text-left aria-[current=true]:bg-papel-2"
-            >
-              <RenglonPartida
-                descripcion={partida.descripcion}
-                anchoCm={partida.anchoCm}
-                altoCm={partida.altoCm}
-                cantidad={partida.cantidad}
-                unidad={material?.unidad ?? "pieza"}
-                pieza={material?.pieza}
-                resultado={resultado}
-                croquis={catalogo.plantilla(partida.plantillaId)?.croquis}
-                enCurso={enCurso}
-              />
-            </button>
-          </li>
-        );
-      })}
-    </ul>
-  );
+  return <ul>{resumen.renglones.map((renglon) => <RenglonCaptura key={renglon.partida.id} {...renglon}
+    enCurso={borrador?.partidaId === renglon.partida.id} onPartida={onPartida} />)}</ul>;
+}
+
+function RenglonCaptura({ partida, resultado, enCurso, onPartida }: Resumen["renglones"][number] & {
+  enCurso: boolean; onPartida: PropsHoja["onPartida"];
+}) {
+  const { catalogo } = useFuente();
+  const material = catalogo.materialDe(partida);
+  return <li className="motion-safe:animate-[caer_220ms_cubic-bezier(0.16,1,0.3,1)]">
+    <button type="button" onClick={() => onPartida(partida)} aria-label={`Corregir ${partida.descripcion}`}
+      aria-current={enCurso ? "true" : undefined} className="block w-full text-left aria-[current=true]:bg-papel-2">
+      <RenglonPartida descripcion={partida.descripcion} anchoCm={partida.anchoCm} altoCm={partida.altoCm} cantidad={partida.cantidad}
+        unidad={material?.unidad ?? "pieza"} pieza={material?.pieza} resultado={resultado}
+        croquis={catalogo.plantilla(partida.plantillaId)?.croquis} enCurso={enCurso} />
+    </button>
+  </li>;
 }
 
 interface PropsPregunta {
@@ -187,30 +176,19 @@ function PreguntaActual({ c, paso, setPaso, medir }: PropsPregunta) {
 function BarraCaptura({ c, paso }: { c: Cotizacion; paso: Paso }) {
   const { rutas } = useFuente();
   const router = useRouter();
-  return (
-    <BarraAccion>
-      {paso.tipo === "trabajo" && (
-        <Boton disabled={c.partidas.length === 0} onClick={() => router.push(rutas.ver(c.id))}>
-          Ver cotización
-        </Boton>
-      )}
-      {paso.tipo === "ancho" && (
-        <Boton type="submit" form={FORM} disabled={parsearCm(paso.b.ancho) === null}>
-          Siguiente: alto
-        </Boton>
-      )}
-      {(paso.tipo === "alto" || paso.tipo === "piezas") && (
-        <Boton type="submit" form={FORM} disabled={!listaParaGuardar(paso.b, paso.tipo)}>
-          {paso.b.nueva ? "Agregar partida" : "Guardar cambios"}
-        </Boton>
-      )}
-      {esDato(paso) && (
-        <Boton type="submit" form={FORM}>
-          Listo
-        </Boton>
-      )}
-    </BarraAccion>
-  );
+  return <BarraAccion>
+    {paso.tipo === "trabajo" ? <Boton data-guia="ver" disabled={c.partidas.length === 0} onClick={() => router.push(rutas.ver(c.id))}>
+      Ver cotización
+    </Boton> : <BotonRespuesta paso={paso} />}
+  </BarraAccion>;
+}
+
+function BotonRespuesta({ paso }: { paso: Exclude<Paso, { tipo: "trabajo" }> }) {
+  if (esDato(paso)) return <Boton type="submit" form={FORM}>Listo</Boton>;
+  if (paso.tipo === "ancho") return <Boton data-guia="seguir" type="submit" form={FORM} disabled={parsearCm(paso.b.ancho) === null}>Siguiente: alto</Boton>;
+  return <Boton type="submit" form={FORM} disabled={!listaParaGuardar(paso.b, paso.tipo)}>
+    {paso.b.nueva ? "Agregar partida" : "Guardar cambios"}
+  </Boton>;
 }
 
 function NoExiste() {

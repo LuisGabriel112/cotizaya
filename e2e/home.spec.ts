@@ -1,5 +1,9 @@
 import { expect, test } from "@playwright/test";
 
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("cotizaya.guia", JSON.stringify(["lista", "captura", "medida", "partida", "vista-previa", "precios", "plan"])));
+});
+
 test("el prototipo abre la lista de ejemplo en español de México, sin login", async ({ page }) => {
   await page.goto("/demo");
   await expect(page).toHaveURL(/\/demo\/cotizaciones$/);

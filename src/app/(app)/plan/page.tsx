@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Encabezado } from "@/components/encabezado";
+import { Guia } from "@/components/guia/guia";
 import { BarraAccion } from "@/components/ui/barra-accion";
 import { Boton } from "@/components/ui/boton";
 import { PRECIOS, type Periodo } from "@/lib/pagos/planes";
@@ -27,14 +28,15 @@ export default async function PlanPage({ searchParams }: { searchParams: Promise
     {pago && avisos[pago] && <p role="status" className="mt-5 border-y-2 border-tinta py-3 text-lg">{avisos[pago]}</p>}
     <EstadoPlan />
     <form action={iniciarPago} className="mt-8 space-y-4">
-      <fieldset className="space-y-3">
+      <fieldset data-guia="periodo" className="space-y-3">
         <legend className="titulo mb-3 text-xl">Elige tu periodo</legend>
         <OpcionPeriodo periodo="mes" texto={`1 mes · ${formatCentavos(PRECIOS.mes).replace(".00", "")}`} />
         <OpcionPeriodo periodo="anio" texto={`1 año · ${formatCentavos(PRECIOS.anio).replace(".00", "")} (2 meses gratis)`} marcado />
       </fieldset>
       <p className="text-base text-tinta-2">Tarjeta, OXXO o transferencia. El plan se activa en cuanto Mercado Pago confirma el pago.</p>
       <Link href="/cotizaciones" className="inline-flex min-h-14 items-center underline">Volver a cotizaciones</Link>
-      <BarraAccion><Boton type="submit" className="w-full">Pagar con Mercado Pago</Boton></BarraAccion>
+      <BarraAccion><Boton data-guia="pagar" type="submit" className="w-full">Pagar con Mercado Pago</Boton></BarraAccion>
     </form>
+    <Guia id="plan" />
   </main>;
 }

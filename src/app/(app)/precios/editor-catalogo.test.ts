@@ -25,6 +25,7 @@ vi.mock("react", async (importarOriginal) => {
 });
 vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: refrescar }) }));
 vi.mock("./acciones", () => acciones);
+vi.mock("@/components/guia/guia", () => ({ Guia: () => null }));
 
 const CORREDIZA: MaterialGuardado = { id: "m1", clave: "corrediza-3", nombre: "Corrediza 3 pulgadas", linea: "Corredizas", unidad: "m2", precioCentavos: 215000 };
 const GRUPOS = [{ linea: "Corredizas", materiales: [CORREDIZA] }];

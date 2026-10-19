@@ -1,5 +1,9 @@
 import { expect, test } from "@playwright/test";
 
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("cotizaya.guia", JSON.stringify(["lista", "captura", "medida", "partida", "vista-previa", "precios", "plan"])));
+});
+
 test("ventana corrediza 120 × 150: de la lista al enlace del cliente", async ({ page }) => {
   await page.goto("/demo/cotizaciones");
   await page.evaluate(() => localStorage.clear());

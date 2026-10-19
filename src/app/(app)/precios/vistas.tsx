@@ -22,19 +22,20 @@ export function FormularioPrecio({ material, precio, cambiar, error, ocupado, pr
 }
 
 export function Lista({ grupos, abrir, abrirNuevo }: { grupos: Grupo[]; abrir: (material: MaterialGuardado) => void; abrirNuevo: () => void }) {
+  const primero = grupos.flatMap((grupo) => grupo.materiales)[0]?.id;
   return <>
     {grupos.length === 0 && <p className="mt-8 text-lg">Aún no tienes materiales. Agrega el primero.</p>}
     {grupos.map((grupo) => <section key={grupo.linea} className="mt-6">
       <h2 className="titulo border-b-2 border-tinta pb-2 text-2xl">{grupo.linea}</h2>
       <ul>{grupo.materiales.map((material) => <li key={material.id}>
-        <button id={`material-${material.id}`} type="button" onClick={() => abrir(material)} className="flex min-h-20 w-full items-center justify-between gap-3 border-b border-dashed border-aluminio py-3 text-left">
+        <button id={`material-${material.id}`} data-guia={material.id === primero ? "material" : undefined} type="button" onClick={() => abrir(material)} className="flex min-h-20 w-full items-center justify-between gap-3 border-b border-dashed border-aluminio py-3 text-left">
           <span className="min-w-0 break-words"><span className="block text-lg font-semibold">{material.nombre}</span><span className="text-base text-tinta-2">{etiquetaUnidad(material.unidad)}</span></span>
           <span className="num shrink-0 text-right text-lg font-bold">{formatCentavos(material.precioCentavos)}</span>
         </button>
       </li>)}</ul>
     </section>)}
     <div className="fixed inset-x-0 bottom-0 border-t-2 border-tinta bg-papel px-4 py-3 pb-[max(12px,env(safe-area-inset-bottom))]">
-      <button id="agregar-material" type="button" onClick={abrirNuevo} className={`${boton} mx-auto block w-full max-w-md bg-amarillo`}>Agregar material</button>
+      <button id="agregar-material" data-guia="agregar" type="button" onClick={abrirNuevo} className={`${boton} mx-auto block w-full max-w-md bg-amarillo`}>Agregar material</button>
     </div>
   </>;
 }

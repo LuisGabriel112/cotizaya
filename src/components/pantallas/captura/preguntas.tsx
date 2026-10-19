@@ -49,12 +49,12 @@ export function PreguntaTrabajo({ c, onPlantilla, onExtra, onIva }: PropsTrabajo
   const { catalogo } = useFuente();
   return (
     <Pregunta titulo={c.partidas.length === 0 ? "¿Qué trabajo es?" : "¿Qué más lleva?"}>
-      <div className="grid grid-cols-2 gap-2">
+      <div data-guia="trabajos" className="grid grid-cols-2 gap-2">
         {catalogo.plantillas.map((pl) => (
           <FichaPlantilla key={pl.id} plantilla={pl} material={catalogo.material(pl.materialId)} onClick={() => onPlantilla(pl)} />
         ))}
       </div>
-      <div className="mt-5 grid grid-cols-2 gap-2 border-t border-dashed border-aluminio pt-4">
+      <div data-guia="ajustes" className="mt-5 grid grid-cols-2 gap-2 border-t border-dashed border-aluminio pt-4">
         <Extra onClick={() => onExtra("descuento")} etiqueta="Descuento" valor={c.descuentoPct ? `${c.descuentoPct} %` : "No"} />
         <Extra onClick={onIva} etiqueta="IVA 16 %" valor={c.conIva ? "Sí" : "No"} pressed={c.conIva} />
         <Extra onClick={() => onExtra("acabado")} etiqueta="Acabado" valor={ACABADOS[c.acabado]} className="col-span-2" />
@@ -103,34 +103,41 @@ interface PropsMedida {
 
 const TITULOS: Record<Exclude<PasoMedida, "piezas">, string> = { ancho: "¿Ancho?", alto: "¿Alto?" };
 
+function nombrePiezas(material?: Pick<Material, "pieza">): string {
+  const nombres = material?.pieza;
+  return nombres?.[1] ?? "piezas";
+}
+
 export function PreguntaMedida({ paso, b, onCambio, onCancelar, onQuitar }: PropsMedida) {
   const { catalogo } = useFuente();
-  const plantilla = catalogo.plantilla(b.plantillaId);
-  const plural = catalogo.materialDe(b)?.pieza?.[1] ?? "piezas";
+  const plural = nombrePiezas(catalogo.materialDe(b));
   const titulo = paso === "piezas" ? `¿Cuántas ${plural}?` : TITULOS[paso];
-  const detalle = (
-    <span className="flex items-center gap-2">
-      {plantilla && <Croquis tipo={plantilla.croquis} className="h-6 w-7" />}
-      {b.descripcion}
-    </span>
-  );
-
-  return (
-    <Pregunta titulo={titulo} detalle={detalle} onCancelar={onCancelar}>
+  return <Pregunta titulo={titulo} detalle={<DetalleTrabajo b={b} />} onCancelar={onCancelar}>
       <CampoMedida paso={paso} b={b} plural={plural} onCambio={onCambio} />
       {paso === "alto" && <Iguales valor={parsearCantidad(b.cantidad) ?? 1} onCambio={(n) => onCambio({ ...b, cantidad: String(n) })} />}
-      {!b.nueva && (
-        <button type="button" onClick={onQuitar} className="titulo mt-5 min-h-14 text-xl text-rojo underline">
-          Quitar esta partida
-        </button>
-      )}
-    </Pregunta>
-  );
+      <QuitarPartida nueva={b.nueva} onQuitar={onQuitar} />
+    </Pregunta>;
+}
+
+function DetalleTrabajo({ b }: { b: Borrador }) {
+  const { catalogo } = useFuente();
+  const plantilla = catalogo.plantilla(b.plantillaId);
+  return <span className="flex items-center gap-2">
+    {plantilla && <Croquis tipo={plantilla.croquis} className="h-6 w-7" />}
+    {b.descripcion}
+  </span>;
+}
+
+function QuitarPartida({ nueva, onQuitar }: { nueva: boolean; onQuitar: () => void }) {
+  if (nueva) return null;
+  return <button type="button" onClick={onQuitar} className="titulo mt-5 min-h-14 text-xl text-rojo underline">
+    Quitar esta partida
+  </button>;
 }
 
 function CampoMedida({ paso, b, plural, onCambio }: { paso: PasoMedida; b: Borrador; plural: string; onCambio: (b: Borrador) => void }) {
   if (paso === "ancho") {
-    return <CampoNumero key="ancho" etiqueta="Ancho en centímetros" unidad="cm" decimal valor={b.ancho} onCambio={(v) => onCambio({ ...b, ancho: v })} />;
+    return <div data-guia="ancho"><CampoNumero key="ancho" etiqueta="Ancho en centímetros" unidad="cm" decimal valor={b.ancho} onCambio={(v) => onCambio({ ...b, ancho: v })} /></div>;
   }
   if (paso === "alto") {
     return <CampoNumero key="alto" etiqueta="Alto en centímetros" unidad="cm" decimal valor={b.alto} onCambio={(v) => onCambio({ ...b, alto: v })} />;
@@ -169,35 +176,20 @@ function CampoNumero({ etiqueta, unidad, valor, onCambio, max = 4, decimal = fal
 }
 
 function Iguales({ valor, onCambio }: { valor: number; onCambio: (n: number) => void }) {
-  return (
-    <div className="mt-4 flex items-center justify-between gap-3">
-      <span id="iguales" className="text-lg">
-        ¿Cuántas iguales?
-      </span>
+  return <div className="mt-4 flex items-center justify-between gap-3">
+      <span id="iguales" className="text-lg">¿Cuántas iguales?</span>
       <div role="group" aria-labelledby="iguales" className="flex items-center">
-        <button
-          type="button"
-          aria-label="Una menos"
-          disabled={valor <= 1}
-          onClick={() => onCambio(Math.max(1, valor - 1))}
+        <button type="button" aria-label="Una menos" disabled={valor <= 1} onClick={() => onCambio(Math.max(1, valor - 1))}
           className="grid size-14 place-items-center rounded-l-sm border-2 border-tinta active:bg-papel-2 disabled:border-tinta-2 disabled:text-tinta-2"
-        >
-          <Icono nombre="menos" />
-        </button>
+        ><Icono nombre="menos" /></button>
         <output className="num grid h-14 w-14 place-items-center border-y-2 border-tinta text-2xl font-bold" aria-live="polite">
           {valor}
         </output>
-        <button
-          type="button"
-          aria-label="Una más"
-          onClick={() => onCambio(Math.min(99, valor + 1))}
+        <button type="button" aria-label="Una más" onClick={() => onCambio(Math.min(99, valor + 1))}
           className="grid size-14 place-items-center rounded-r-sm border-2 border-tinta active:bg-papel-2"
-        >
-          <Icono nombre="mas" />
-        </button>
+        ><Icono nombre="mas" /></button>
       </div>
-    </div>
-  );
+    </div>;
 }
 
 interface PropsDato {
@@ -251,15 +243,14 @@ export function PreguntaAcabado({ c, onEditar, onCancelar }: PropsDato) {
           </label>
         ))}
       </fieldset>
-      <label className={`mt-4 ${OPCION}`}>
-        <input
-          type="checkbox"
-          checked={c.garantiaSalitre}
-          onChange={(e) => onEditar({ garantiaSalitre: e.target.checked })}
-          className="size-6 accent-tinta"
-        />
-        Incluir garantía contra salitre
-      </label>
+      <GarantiaSalitre c={c} onEditar={onEditar} />
     </Pregunta>
   );
+}
+
+function GarantiaSalitre({ c, onEditar }: Pick<PropsDato, "c" | "onEditar">) {
+  return <label className={`mt-4 ${OPCION}`}>
+    <input type="checkbox" checked={c.garantiaSalitre} onChange={(e) => onEditar({ garantiaSalitre: e.target.checked })} className="size-6 accent-tinta" />
+    Incluir garantía contra salitre
+  </label>;
 }

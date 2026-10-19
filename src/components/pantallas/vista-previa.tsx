@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect } from "react";
 import { Encabezado } from "@/components/encabezado";
+import { Guia } from "@/components/guia/guia";
 import { HojaCotizacion } from "@/components/hoja-cotizacion";
 import { Icono } from "@/components/icono";
 import { BarraAccion } from "@/components/ui/barra-accion";
@@ -36,36 +37,34 @@ export function PantallaVistaPrevia() {
 function VistaPrevia({ c }: { c: Cotizacion }) {
   const { taller, catalogo, rutas } = useFuente();
   const resumen = resumir(c, catalogo);
-  const resultado = c.vistaEn ? RESULTADO[c.estado] : undefined;
-
-  return (
-    <main className="mx-auto max-w-md px-4 pb-32">
-      <Encabezado titulo="Así la recibe" atras={{ href: rutas.lista, texto: "Cotizaciones" }} derecha={<CintaEstado estado={c.estado} />} />
-
-      {resultado && c.vistaEn && (
-        <p className="titulo mt-3 text-lg">
-          {resultado} · {formatFecha(c.vistaEn)}, {formatHora(c.vistaEn)}
-        </p>
-      )}
-
-      <nav className="mt-3 flex flex-wrap gap-x-6" aria-label="Acciones de la cotización">
-        <Link href={rutas.editar(c.id)} className="inline-flex min-h-14 items-center font-semibold underline">
-          Corregir
-        </Link>
-        <Link href={rutas.publica(c.slug)} className="inline-flex min-h-14 items-center font-semibold underline">
-          Ver el enlace del cliente
-        </Link>
-      </nav>
-
+  return <main className="mx-auto max-w-md px-4 pb-32">
+      <Encabezado titulo="Así la recibe" atras={{ href: rutas.lista, texto: "Cotizaciones" }} derecha={<span data-guia="estado"><CintaEstado estado={c.estado} /></span>} />
+      <ResultadoVistaPrevia c={c} />
+      <AccionesVistaPrevia c={c} />
       <div className="mt-2">
         <HojaCotizacion cotizacion={c} resumen={resumen} taller={taller} catalogo={catalogo} />
       </div>
-
       <BarraAccion>
         <EnviarWhatsApp c={c} totalCentavos={resumen.totales.totalCentavos} />
       </BarraAccion>
-    </main>
-  );
+      <Guia id="vista-previa" />
+    </main>;
+}
+
+function ResultadoVistaPrevia({ c }: { c: Cotizacion }) {
+  const resultado = RESULTADO[c.estado];
+  if (!resultado || !c.vistaEn) return null;
+  return <p className="titulo mt-3 text-lg">
+    {resultado} · {formatFecha(c.vistaEn)}, {formatHora(c.vistaEn)}
+  </p>;
+}
+
+function AccionesVistaPrevia({ c }: { c: Cotizacion }) {
+  const { rutas } = useFuente();
+  return <nav className="mt-3 flex flex-wrap gap-x-6" aria-label="Acciones de la cotización">
+    <Link data-guia="corregir" href={rutas.editar(c.id)} className="inline-flex min-h-14 items-center font-semibold underline">Corregir</Link>
+    <Link data-guia="enlace-cliente" href={rutas.publica(c.slug)} className="inline-flex min-h-14 items-center font-semibold underline">Ver el enlace del cliente</Link>
+  </nav>;
 }
 
 function EnviarWhatsApp({ c, totalCentavos }: { c: Cotizacion; totalCentavos: number }) {
@@ -77,7 +76,7 @@ function EnviarWhatsApp({ c, totalCentavos }: { c: Cotizacion; totalCentavos: nu
     acciones.marcarEnviada(c.id);
   };
   return (
-    <a href={rutaPublica} target="_blank" rel="noreferrer" onClick={enviar} className={clasesBoton("principal", "no-underline")}>
+    <a data-guia="whatsapp" href={rutaPublica} target="_blank" rel="noreferrer" onClick={enviar} className={clasesBoton("principal", "no-underline")}>
       <Icono nombre="whatsapp" />
       Enviar por WhatsApp
     </a>

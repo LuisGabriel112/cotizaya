@@ -12,7 +12,7 @@ function mostrarFechaPlan(fecha: string): string {
 export function EstadoPlan() {
   const { taller } = useFuente();
   if (planVigente(taller, new Date())) {
-    return <p className="mt-5 border-y-2 border-tinta py-3 text-lg">Plan fundador{taller.planHasta && ` hasta el ${mostrarFechaPlan(taller.planHasta)}`}</p>;
+    return <p data-guia="estado-plan" className="mt-5 border-y-2 border-tinta py-3 text-lg">Plan fundador{taller.planHasta && ` hasta el ${mostrarFechaPlan(taller.planHasta)}`}</p>;
   }
-  return <p className="mt-5 border-y-2 border-tinta py-3 text-lg">Plan gratis: 5 cotizaciones al mes</p>;
+  return <p data-guia="estado-plan" className="mt-5 border-y-2 border-tinta py-3 text-lg">Plan gratis: 5 cotizaciones al mes</p>;
 }
