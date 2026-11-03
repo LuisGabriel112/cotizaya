@@ -11,6 +11,6 @@ export function pendientes(archivos: readonly string[], aplicadas: ReadonlySet<s
 }
 
 /** La base local de prueba (stub-local.sql) no usa SSL; la de Supabase sí. */
-export function opcionesSsl(url: string): false | { rejectUnauthorized: false } {
-  return /@(localhost|127\.0\.0\.1)[:/]/.test(url) ? false : { rejectUnauthorized: false };
+export function opcionesSsl(url: string): false | { rejectUnauthorized: true } {
+  return /@(localhost|127\.0\.0\.1)[:/]/.test(url) ? false : { rejectUnauthorized: true };
 }
