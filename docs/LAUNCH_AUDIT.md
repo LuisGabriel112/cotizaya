@@ -76,3 +76,13 @@ operación de SMS, experiencia de talleres reales. No se declaran aprobados.
   una vez y protege el estado por RPC. 92/92 tests dirigidos SQL+repositorio aprobados.
   El backfill de fechas solo usa eventos de envío existentes; documentos históricos sin
   evidencia quedan pendientes de conciliación y no se pueden aceptar como vigentes.
+- T-05b/c: fechas de emisión/vencimiento propagadas al dominio y compartidas por hoja/PDF.
+  Diez pruebas de mapeo y 19 de documentos/fechas aprobadas; pendiente inspección visual.
+- T-09 / A-10: Next/eslint-config-next 16.4.1 y Zod 4.6.6 instalados con lockfile.
+  Build completo aprobado. pnpm audit --prod: 0 altos, 0 críticos, 1 moderado (uuid).
+  Instalación frozen validada con las políticas existentes; sin nuevas excepciones pnpm.
+- T-10a: cinco pruebas del guard de DB local aprobadas; preparador seguro aplicó las 11
+  migraciones desde cero en otra base efímera. La suite completa pasó 653/653 sin omisiones
+  y typecheck. Tests ya no cargan .env.local; CI preparada, aún no ejecutada en GitHub.
+- Playwright: primera ejecución 18/19. Falló navegación captura→vista previa en el test
+  existente; se está reproduciendo de forma aislada antes de atribuir causa o cambiarlo.

@@ -1,9 +1,7 @@
-import { existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "vitest/config";
 
-// .env.local trae SUPABASE_DB_URL para los tests de RLS; sin él, esa suite se salta.
-if (existsSync(".env.local")) process.loadEnvFile(".env.local");
+// La base de pruebas se pasa explícitamente; nunca cargar secretos reales de .env.local.
 
 export default defineConfig({
   resolve: {

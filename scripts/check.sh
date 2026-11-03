@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -uo pipefail
 cd "$(dirname "$0")/.." || exit 1
+if [[ -f .env.local ]]; then
+  echo 'CHECK BLOCKED: ejecuta en un worktree sin .env.local real.'
+  exit 2
+fi
 logs="${CHECK_LOG_DIR:-/tmp/cotizaya-check}"
 mkdir -p "$logs" || exit 1
 run() {
