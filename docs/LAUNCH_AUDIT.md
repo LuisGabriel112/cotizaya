@@ -42,3 +42,11 @@ operación de SMS, experiencia de talleres reales. No se declaran aprobados.
   Antes de migrar producción, conciliar pagos históricos no-approved: el esquema viejo
   no permite saber si fueron aprobados anteriormente. Backfill solo marca los approved;
   no se declara resuelta la conciliación ni la política comercial de reembolsos.
+- T-04 / A-03: seis regresiones fallaban antes del cambio. Migración 0009 mantiene
+  foto/precio autoritativos, importes y totales en la misma transacción, con bloqueo por
+  cotización. 12 nuevas pruebas de integridad aprobadas: tres unidades, half-up,
+  descuento/IVA, rollback por error/desbordamiento, escritura directa y concurrencia.
+  Se ajustaron medidas de los fixtures SQL existentes (rls y catálogo) para que representen
+  partidas válidas. Se conserva el protocolo de la app; su recálculo adicional ya no es
+  necesario para persistir y no puede sobrescribir cifras calculadas por PostgreSQL.
+  Pendiente conciliar datos históricos antes de migrar: no se reescribieron cotizaciones antiguas.
