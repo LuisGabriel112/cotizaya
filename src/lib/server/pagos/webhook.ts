@@ -8,7 +8,7 @@ export interface DependenciasWebhook {
 }
 
 export async function procesarNotificacion(entrada: EntradaWebhook, deps: DependenciasWebhook): Promise<number> {
-  if (!entrada.dataId) return 400;
+  if (!/^[a-zA-Z0-9_-]{1,200}$/.test(entrada.dataId)) return 400;
   if (!deps.firmaValida({ firma: entrada.firma, requestId: entrada.requestId, dataId: entrada.dataId })) return 401;
   if (entrada.tipo !== "payment") return 200;
   try {
@@ -17,6 +17,7 @@ export async function procesarNotificacion(entrada: EntradaWebhook, deps: Depend
       console.warn(`Pago ${entrada.dataId} no existe en Mercado Pago`);
       return 200;
     }
+    if (String(pago.id) !== entrada.dataId) return 502;
     const resultado = interpretarPago(pago);
     if (!resultado.ok) {
       console.warn(resultado.motivo);

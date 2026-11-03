@@ -30,8 +30,8 @@ suite("Catálogo editable por el taller", () => {
   async function cotizarConElMaterial(tallerId: string): Promise<string> {
     const cotizacion = await crearCotizacion(db, tallerId, "Leticia Cruz");
     await db.query(
-      `insert into public.quote_items (quote_id, workshop_id, descripcion, material_id, unidad, precio_centavos, cantidad, mano_obra_centavos)
-       select $2, $1, 'Ventana', id, unidad, precio_centavos, 1, 35000
+      `insert into public.quote_items (quote_id, workshop_id, descripcion, material_id, unidad, precio_centavos, cantidad, mano_obra_centavos, ancho_cm, alto_cm)
+       select $2, $1, 'Ventana', id, unidad, precio_centavos, 1, 35000, 120, 150
          from public.materials where workshop_id = $1 and clave = $3`,
       [tallerId, cotizacion.id, MATERIAL],
     );

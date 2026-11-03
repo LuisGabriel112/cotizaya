@@ -19,6 +19,7 @@ import type { Cotizacion, PartidaGuardada, Plantilla } from "@/lib/cotizaciones/
 import { parsearCm } from "@/lib/quote";
 import { aGuardada, borradorDePartida, borradorDePlantilla, conBorrador, listaParaGuardar, primerPaso, type Borrador, type PasoMedida } from "./borrador";
 import { PreguntaAcabado, PreguntaCliente, PreguntaDescuento, PreguntaMedida, PreguntaTrabajo } from "./preguntas";
+import { AccionRevision } from "../revisiones";
 
 type PasoDato = "cliente" | "descuento" | "acabado";
 type Paso = { tipo: "trabajo" } | { tipo: PasoMedida; b: Borrador } | { tipo: PasoDato };
@@ -29,11 +30,12 @@ const esDato = (p: Paso): p is { tipo: PasoDato } => p.tipo === "cliente" || p.t
 
 export function PantallaCaptura() {
   const { id } = useParams<{ id: string }>();
-  const { listo } = useFuente();
+  const { listo,acciones,rutas } = useFuente();
   const c = useCotizacion(id);
 
   if (!listo) return <main className="mx-auto max-w-md px-4" aria-busy="true" />;
   if (!c) return <NoExiste />;
+  if(c.estado!=="borrador"&&acciones.revisar)return <main className="mx-auto max-w-md px-4 py-6"><h1 className="titulo text-3xl">Esta versión ya se envió</h1><p className="mt-3">Para corregirla, crea una revisión. La oferta enviada se conserva.</p><AccionRevision id={c.id}/><Link href={rutas.ver(c.id)} className="inline-flex min-h-14 items-center underline">Ver oferta e historial</Link></main>;
   return <Conversacion c={c} />;
 }
 

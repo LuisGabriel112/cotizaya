@@ -4,15 +4,10 @@ import { Guia } from "@/components/guia/guia";
 import { BarraAccion } from "@/components/ui/barra-accion";
 import { Boton } from "@/components/ui/boton";
 import { PRECIOS, type Periodo } from "@/lib/pagos/planes";
+import { avisoDePago } from "@/lib/pagos/aviso";
 import { formatCentavos } from "@/lib/format";
 import { iniciarPago } from "./acciones";
 import { EstadoPlan } from "./estado-plan";
-
-const avisos: Record<string, string> = {
-  aprobado: "Pago aprobado. Tu plan ya está activo.",
-  pendiente: "Tu pago está pendiente. En cuanto se acredite se activa solo.",
-  rechazado: "El pago no pasó. Intenta de nuevo o usa otro medio.",
-};
 
 function OpcionPeriodo({ periodo, texto, marcado = false }: { periodo: Periodo; texto: string; marcado?: boolean }) {
   return <label className="flex min-h-14 items-center gap-3 rounded-sm border-2 border-tinta px-4 py-2 text-lg has-checked:bg-papel-2">
@@ -23,9 +18,10 @@ function OpcionPeriodo({ periodo, texto, marcado = false }: { periodo: Periodo; 
 
 export default async function PlanPage({ searchParams }: { searchParams: Promise<{ pago?: string }> }) {
   const { pago } = await searchParams;
+  const aviso = avisoDePago(pago);
   return <main className="mx-auto max-w-md px-4 pb-36">
     <Encabezado titulo="Plan" atras={{ href: "/cotizaciones", texto: "Cotizaciones" }} />
-    {pago && avisos[pago] && <p role="status" className="mt-5 border-y-2 border-tinta py-3 text-lg">{avisos[pago]}</p>}
+    {aviso && <p role="status" className="mt-5 border-y-2 border-tinta py-3 text-lg">{aviso}</p>}
     <EstadoPlan />
     <form action={iniciarPago} className="mt-8 space-y-4">
       <fieldset data-guia="periodo" className="space-y-3">

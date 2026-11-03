@@ -1,0 +1,13 @@
+.git
+.env*
+node_modules
+.next
+coverage
+test-results
+playwright-report
+.agents
+.claude
+.impeccable
+video-cotizaya
+*.log
+*.tsbuildinfo

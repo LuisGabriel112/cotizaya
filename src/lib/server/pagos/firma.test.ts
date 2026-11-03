@@ -5,7 +5,8 @@ import { verificarFirma } from "./firma";
 const SECRETO = "secreto-de-prueba";
 const firmar = (manifiesto: string) => createHmac("sha256", SECRETO).update(manifiesto).digest("hex");
 const v1 = firmar("id:123abc;request-id:req-1;ts:1704908010;");
-const valida = { secreto: SECRETO, firma: `ts=1704908010,v1=${v1}`, requestId: "req-1", dataId: "123abc" };
+const AHORA = 1704908010 * 1000;
+const valida = { secreto: SECRETO, firma: `ts=1704908010,v1=${v1}`, requestId: "req-1", dataId: "123abc", ahora: AHORA };
 
 describe("verificarFirma (x-signature de Mercado Pago)", () => {
   it("acepta la firma HMAC-SHA256 del manifiesto id;request-id;ts", () => {
@@ -34,5 +35,28 @@ describe("verificarFirma (x-signature de Mercado Pago)", () => {
     ["sin secreto", { secreto: "" }],
   ])("rechaza con %s", (_, cambios) => {
     expect(verificarFirma({ ...valida, ...cambios })).toBe(false);
+  });
+
+  it.each([-300_001, 300_001, Number.NaN])("rechaza desfase de reloj %s", (desfase) => {
+    expect(verificarFirma({ ...valida, ahora: AHORA + desfase })).toBe(false);
+  });
+
+  it.each([-300_000, 300_000])("acepta el límite de tolerancia %s", (desfase) => {
+    expect(verificarFirma({ ...valida, ahora: AHORA + desfase })).toBe(true);
+  });
+
+  it("acepta timestamp en milisegundos y reloj predeterminado", () => {
+    const ts = String(Date.now());
+    const hash = firmar(`id:123abc;request-id:req-1;ts:${ts};`);
+    expect(verificarFirma({ ...valida, ahora: undefined, firma: `ts=${ts},v1=${hash}` })).toBe(true);
+  });
+
+  it.each(["no-es-fecha", "1e12", "1704908010.0", "17049080100000000"])("rechaza ts %s aunque el HMAC coincida", (ts) => {
+    const hash = firmar(`id:123abc;request-id:req-1;ts:${ts};`);
+    expect(verificarFirma({ ...valida, firma: `ts=${ts},v1=${hash}` })).toBe(false);
+  });
+
+  it.each([`ts=1704908010,ts=1704908010,v1=${v1}`, `ts=1704908010,v1=${v1},v1=${v1}`])("rechaza parámetros duplicados", (firma) => {
+    expect(verificarFirma({ ...valida, firma })).toBe(false);
   });
 });

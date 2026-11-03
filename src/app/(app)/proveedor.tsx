@@ -17,14 +17,14 @@ const ESPERA_EDICION_MS = 400;
 
 /** Responde al instante con el mismo reductor del prototipo y confirma con el servidor detrás. */
 function useAcciones(despachar: Dispatch<Accion>, alFallar: () => void, alAgotarCupo: () => void): AccionesCotizaciones {
-  const agrupador = useMemo(() => crearAgrupador(ESPERA_EDICION_MS, (id, cambios) => servidor.editarCotizacion(id, cambios).catch(alFallar)), [alFallar]);
+  const agrupador = useMemo(() => crearAgrupador(ESPERA_EDICION_MS, (id, cambios) => servidor.editarCotizacion(id, cambios).catch(error=>{alFallar();throw error;})), [alFallar]);
 
   // Al salir de la pestaña se manda lo que quedó pendiente.
   useEffect(() => {
-    const vaciar = () => agrupador.vaciar();
+    const vaciar = () => void agrupador.vaciar().catch(alFallar);
     window.addEventListener("pagehide", vaciar);
     return () => window.removeEventListener("pagehide", vaciar);
-  }, [agrupador]);
+  }, [agrupador,alFallar]);
 
   return useMemo(() => crearAccionesOptimistas({ despachar, servidor, agrupador, alFallar, alAgotarCupo }), [despachar, alFallar, alAgotarCupo, agrupador]);
 }

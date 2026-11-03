@@ -1,12 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { procesarNotificacion, deps } = vi.hoisted(() => ({
+const { procesarNotificacion, deps, crearDependencias } = vi.hoisted(() => ({
   procesarNotificacion: vi.fn(),
+  crearDependencias: vi.fn(),
   deps: { firmaValida: vi.fn(), obtenerPago: vi.fn(), registrarPago: vi.fn() },
 }));
 
 vi.mock("@/lib/server/pagos/webhook", () => ({ procesarNotificacion }));
-vi.mock("@/lib/server/pagos/dependencias", () => ({ dependenciasWebhook: () => deps }));
+vi.mock("@/lib/server/pagos/dependencias", () => ({ dependenciasWebhook: crearDependencias }));
 
 import { POST } from "./route";
 
@@ -15,6 +16,7 @@ const encabezados = { "x-signature": "ts=1,v1=x", "x-request-id": "req-1", "cont
 beforeEach(() => {
   vi.clearAllMocks();
   procesarNotificacion.mockResolvedValue(200);
+  crearDependencias.mockReturnValue(deps);
 });
 
 describe("POST /api/mercadopago/webhook", () => {
@@ -45,5 +47,18 @@ describe("POST /api/mercadopago/webhook", () => {
     const res = await POST(req);
     expect(res.status).toBe(400);
     expect(procesarNotificacion).toHaveBeenCalledWith({ tipo: "", dataId: "", firma: "", requestId: "" }, deps);
+  });
+
+  it("configuración fallida devuelve 503 sin revelar el error privado", async () => {
+    crearDependencias.mockImplementation(() => { throw new Error("secreto-privado"); });
+    const respuesta = await POST(new Request("https://x/api/mercadopago/webhook?data.id=123&type=payment", { method: "POST" }));
+    expect(respuesta.status).toBe(503);
+    expect(await respuesta.text()).not.toContain("secreto-privado");
+  });
+
+  it("rechaza parámetros de ID duplicados antes de crear dependencias", async () => {
+    const respuesta = await POST(new Request("https://x/api/mercadopago/webhook?data.id=123&data.id=999&type=payment", { method: "POST" }));
+    expect(respuesta.status).toBe(400);
+    expect(crearDependencias).not.toHaveBeenCalled();
   });
 });

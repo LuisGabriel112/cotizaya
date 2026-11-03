@@ -18,6 +18,6 @@ describe("migraciones", () => {
   it("SSL solo fuera de la máquina local", () => {
     expect(opcionesSsl("postgres://postgres@localhost:54329/x")).toBe(false);
     expect(opcionesSsl("postgres://postgres@127.0.0.1/x")).toBe(false);
-    expect(opcionesSsl("postgresql://postgres.abc:pw@aws-0-us-east-1.pooler.supabase.com:5432/postgres")).toEqual({ rejectUnauthorized: false });
+    expect(opcionesSsl("postgresql://postgres.abc:pw@aws-0-us-east-1.pooler.supabase.com:5432/postgres")).toEqual({ rejectUnauthorized: true });
   });
 });

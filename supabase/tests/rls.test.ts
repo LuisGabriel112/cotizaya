@@ -18,8 +18,8 @@ const PERMISO_NEGADO = "42501";
 
 async function agregarPartida(db: Client, tallerId: string, quoteId: string): Promise<void> {
   await db.query(
-    `insert into public.quote_items (quote_id, workshop_id, descripcion, material_id, unidad, precio_centavos, cantidad, mano_obra_centavos)
-     select $2, $1, 'Ventana', id, unidad, precio_centavos, 1, 35000
+    `insert into public.quote_items (quote_id, workshop_id, descripcion, material_id, unidad, precio_centavos, cantidad, mano_obra_centavos, ancho_cm, alto_cm)
+     select $2, $1, 'Ventana', id, unidad, precio_centavos, 1, 35000, 120, 150
        from public.materials where workshop_id = $1 and clave = 'corrediza-2-6mm'`,
     [tallerId, quoteId],
   );
@@ -159,6 +159,8 @@ suite("folio, enlace público y primer ingreso", () => {
   it("la vista pública trae la cotización y el contacto del taller, nada más", async () => {
     const cot = await crearCotizacion(db, tallerA, "Leticia");
     await agregarPartida(db, tallerA, cot.id);
+    await comoUsuario(db,a);
+    await db.query("select public.emitir_cotizacion($1)",[cot.id]);
     await comoAnonimo(db);
     const { rows } = await db.query<{ v: Record<string, Record<string, unknown>> }>(
       "select public.cotizacion_publica($1) as v",
@@ -195,6 +197,9 @@ suite("folio, enlace público y primer ingreso", () => {
 
   it("aceptar desde el enlace deja la cotización aceptada", async () => {
     const cot = await crearCotizacion(db, tallerA, "Leticia");
+    await agregarPartida(db,tallerA,cot.id);
+    await comoUsuario(db,a);
+    await db.query("select public.emitir_cotizacion($1)",[cot.id]);
     await comoAnonimo(db);
     await db.query("select public.aceptar_cotizacion($1)", [cot.public_slug]);
     await comoPostgres(db);

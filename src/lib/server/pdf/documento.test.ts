@@ -43,6 +43,8 @@ function cotizacion(cambios: Partial<Cotizacion> = {}): Cotizacion {
     garantiaSalitre: false,
     estado: "enviada",
     creadaEn: "2026-10-12T18:00:00.000Z",
+    enviadaEn: "2026-10-12T18:00:00.000Z",
+    venceEn: "2026-10-27T18:00:00.000Z",
     ...cambios,
   };
 }
@@ -52,6 +54,11 @@ const armar = (c: Partial<Cotizacion> = {}, t: Partial<Taller> = {}) => armarDoc
 const entradas = [corrediza, felpa].map((p) => ({ anchoCm: p.anchoCm, altoCm: p.altoCm, cantidad: p.cantidad, material: p.material!, manoObraCentavos: p.manoObraCentavos }));
 
 describe("armarDocumento", () => {
+  it("la vigencia usa el primer envío, no la creación", () => {
+    const documento = armar({enviadaEn:"2026-11-02T18:00:00Z",venceEn:"2026-11-17T18:00:00Z"});
+    expect(documento.fecha).toBe("2 de noviembre de 2026");
+    expect(documento.vigencia).toBe("Vigencia: 15 días, hasta el 17 de noviembre de 2026");
+  });
   it("encabezado con folio, cliente, fecha y vigencia de 15 días", () => {
     const d = armar();
     expect(d.folio).toBe("0042");

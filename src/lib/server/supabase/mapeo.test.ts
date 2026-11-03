@@ -71,6 +71,16 @@ const plantilla = (cambios: Partial<FilaPlantilla>): FilaPlantilla => ({
 });
 
 describe("aCotizacion", () => {
+  it("conserva historial y datos del taller de la emisión", () => {
+    const c=aCotizacion({...QUOTE,revision_of_id:"anterior",revision_root_id:"raiz",superseded_at:"2026-11-02T18:00:00Z",
+      issued_snapshot:{taller:{nombre:"Nombre emitido",ciudad:"Veracruz",telefono:"2290000000",condiciones:"50%",plan:"gratis",logo_url:null}}});
+    expect(c).toMatchObject({revisionDe:"anterior",revisionRaiz:"raiz",sustituidaEn:"2026-11-02T18:00:00Z",tallerEmitido:{nombre:"Nombre emitido"}});
+  });
+  it("conserva fecha de emisión y vencimiento desde la base", () => {
+    expect(aCotizacion({...QUOTE,sent_at:"2026-11-02T18:00:00Z",expires_at:"2026-11-17T18:00:00Z"})).toMatchObject({
+      enviadaEn:"2026-11-02T18:00:00Z",venceEn:"2026-11-17T18:00:00Z",
+    });
+  });
   it("convierte la fila con sus partidas ordenadas y la foto del material", () => {
     const c = aCotizacion(QUOTE);
     expect(c).toMatchObject({
@@ -182,6 +192,13 @@ describe("aTaller y aCambiosFila", () => {
 });
 
 describe("aVistaPublica", () => {
+  it("la foto basta para mostrar una partida sin UUID interno de material", () => {
+    const item = {...ITEM,material_id:undefined};
+    const taller = {nombre:"El Faro",ciudad:"",telefono:"",condiciones:"",plan:"gratis" as const,logo_url:null};
+    const vista = aVistaPublica({quote:QUOTE,items:[item],taller});
+    expect(vista.cotizacion.partidas[0]?.materialId).toBe("");
+    expect(vista.cotizacion.partidas[0]?.material?.precioCentavos).toBe(18000);
+  });
   it("arma cotización y taller desde el JSON de cotizacion_publica", () => {
     const { quote_items: items, ...quote } = QUOTE;
     const taller = { nombre: "El Faro", ciudad: "", telefono: "2290000001", condiciones: "", plan: "fundador" as const, logo_url: null };

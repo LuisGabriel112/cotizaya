@@ -6,10 +6,12 @@ import { esquemaCambios, esquemaId, esquemaPartida } from "@/lib/cotizaciones/es
 import type { CambiosCotizacion } from "@/lib/cotizaciones/estado";
 import type { PartidaConFoto } from "@/lib/cotizaciones/puerto";
 import type { PartidaGuardada } from "@/lib/cotizaciones/tipos";
+import type { Cotizacion, Estado } from "@/lib/cotizaciones/tipos";
 import type { ResultadoCrear } from "@/lib/cotizaciones/optimista";
 import { CupoAgotado } from "@/lib/plan/cupo";
 import { clienteServidor } from "@/lib/server/supabase/cliente";
 import { RepositorioSupabase } from "@/lib/server/supabase/repositorio";
+import { sinError } from "@/lib/server/supabase/repositorio";
 import { exigirTaller } from "@/lib/server/supabase/sesion";
 
 // Todo lo que llega del navegador se valida con Zod; RLS vuelve a acotar en la base.
@@ -47,6 +49,25 @@ export async function marcarEnviada(id: string): Promise<void> {
 
 export async function avisoVisto(id: string): Promise<void> {
   await (await casosDeSesion()).avisoVisto(esquemaId.parse(id));
+}
+
+export async function revisarCotizacion(id:string):Promise<Cotizacion> {
+  const db=await clienteServidor();
+  const {workshopId}=await exigirTaller(db);
+  const respuesta=await db.rpc("revisar_cotizacion",{p_id:esquemaId.parse(id)});
+  if(respuesta.error?.code==="CY429") throw new CupoAgotado();
+  const nueva=esquemaId.parse(sinError(respuesta));
+  const cotizacion=await new RepositorioSupabase(db,workshopId).porId(nueva);
+  if(!cotizacion) throw new Error("revision-no-disponible");
+  return cotizacion;
+}
+
+export async function historialCotizacion(id:string):Promise<{id:string;folio:number;estado:Estado}[]> {
+  const db=await clienteServidor();
+  await exigirTaller(db);
+  const filas=sinError(await db.rpc("historial_cotizacion",{p_id:esquemaId.parse(id)})) as
+    {id:string;folio:number;status:Estado}[] | null;
+  return (filas??[]).map(f=>({id:f.id,folio:f.folio,estado:f.status}));
 }
 
 export async function salir(): Promise<void> {

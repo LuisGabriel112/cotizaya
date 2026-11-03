@@ -35,6 +35,12 @@ export interface FilaQuote {
   /** La vista pública no lo trae. */
   aviso_pendiente?: boolean;
   created_at: string;
+  sent_at?: string | null;
+  expires_at?: string | null;
+  revision_of_id?: string | null;
+  revision_root_id?: string | null;
+  superseded_at?: string | null;
+  issued_snapshot?: Pick<JsonPublico,"taller"> | null;
   quote_items?: FilaItem[];
 }
 
@@ -108,6 +114,12 @@ export function aCotizacion(q: FilaQuote): Cotizacion {
     garantiaSalitre: q.garantia_salitre,
     estado: q.status,
     creadaEn: q.created_at,
+    ...(q.sent_at ? { enviadaEn: q.sent_at } : {}),
+    ...(q.expires_at ? { venceEn: q.expires_at } : {}),
+    ...(q.revision_of_id ? {revisionDe:q.revision_of_id} : {}),
+    ...(q.revision_root_id ? {revisionRaiz:q.revision_root_id} : {}),
+    ...(q.superseded_at ? {sustituidaEn:q.superseded_at} : {}),
+    ...(q.issued_snapshot ? {tallerEmitido:aTaller({plan_until:null,...q.issued_snapshot.taller})} : {}),
     avisoPendiente: q.aviso_pendiente ?? false,
     ...(q.viewed_at ? { vistaEn: q.viewed_at } : {}),
   };
@@ -188,10 +200,11 @@ export function aCambiosFila(cambios: CambiosCotizacion): Record<string, unknown
 
 export interface JsonPublico {
   quote: Omit<FilaQuote, "quote_items">;
-  items: FilaItem[];
+  items: (Omit<FilaItem,"material_id"> & {material_id?: string | null})[];
   taller: Omit<FilaTaller, "plan_until"> & Partial<Pick<FilaTaller, "plan_until">>;
 }
 
 export function aVistaPublica(json: JsonPublico): { cotizacion: Cotizacion; taller: Taller } {
-  return { cotizacion: aCotizacion({ ...json.quote, quote_items: json.items }), taller: aTaller({ plan_until: null, ...json.taller }) };
+  const items = json.items.map((item)=>({...item,material_id:item.material_id ?? null}));
+  return { cotizacion: aCotizacion({ ...json.quote, quote_items: items }), taller: aTaller({ plan_until: null, ...json.taller }) };
 }

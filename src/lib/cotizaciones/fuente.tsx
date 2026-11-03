@@ -12,10 +12,11 @@ import type { Cupo } from "@/lib/plan/cupo";
 export interface AccionesCotizaciones {
   /** Crea una cotización en borrador y regresa su id. */
   crear: () => Promise<string>;
+  revisar?: (id: string) => Promise<string>;
   guardarPartida: (id: string, partida: PartidaGuardada) => void;
   quitarPartida: (id: string, partidaId: string) => void;
   editar: (id: string, cambios: CambiosCotizacion) => void;
-  marcarEnviada: (id: string) => void;
+  marcarEnviada: (id: string) => void|Promise<void>;
   avisoVisto: (id: string) => void;
 }
 

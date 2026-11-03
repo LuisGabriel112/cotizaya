@@ -21,7 +21,10 @@ function dbFalsa(resultado: { data: unknown; error: { message: string; code?: st
             },
     },
   );
-  const db = { from: (tabla: string) => (llamadas.push(["from", [tabla]]), cadena) };
+  const db = {
+    from: (tabla: string) => (llamadas.push(["from", [tabla]]), cadena),
+    rpc: (nombre: string, args: unknown) => (llamadas.push(["rpc", [nombre,args]]), cadena),
+  };
   return { repo: new RepositorioSupabase(db as unknown as SupabaseClient, "w1"), llamadas };
 }
 
@@ -61,16 +64,11 @@ describe("RepositorioSupabase", () => {
     ]);
   });
 
-  it("marcarEnviada solo avanza desde borrador y deja evento", async () => {
+  it("marcarEnviada usa el RPC atómico de emisión y evento", async () => {
     const { repo, llamadas } = dbFalsa();
     await repo.marcarEnviada("q1");
     expect(llamadas).toEqual([
-      ["from", ["quotes"]],
-      ["update", [{ status: "enviada" }]],
-      ["eq", ["id", "q1"]],
-      ["eq", ["status", "borrador"]],
-      ["from", ["quote_events"]],
-      ["insert", [{ quote_id: "q1", workshop_id: "w1", tipo: "enviada" }]],
+      ["rpc", ["emitir_cotizacion", {p_id:"q1"}]],
     ]);
   });
 

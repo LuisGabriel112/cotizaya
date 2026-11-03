@@ -6,7 +6,7 @@ import { Total } from "@/components/ui/total";
 import type { Catalogo } from "@/lib/cotizaciones/catalogo";
 import type { Resumen } from "@/lib/cotizaciones/resumen";
 import { ACABADOS, type Cotizacion, type Taller } from "@/lib/cotizaciones/tipos";
-import { formatFecha } from "@/lib/format";
+import { fechaDocumento, vigenciaDocumento } from "@/lib/cotizaciones/vigencia";
 import { formatTelefono } from "@/lib/telefono";
 
 /**
@@ -37,10 +37,10 @@ export function HojaCotizacion({ cotizacion: c, resumen, taller, catalogo }: Pro
           <dd className={c.cliente ? "font-medium" : "text-tinta-2"}>{c.cliente || "Sin nombre"}</dd>
           <dt className="text-tinta-2">Fecha</dt>
           <dd>
-            {formatFecha(c.creadaEn)} {new Date(c.creadaEn).getFullYear()}
+            {fechaDocumento(c)}
           </dd>
           <dt className="text-tinta-2">Vigencia</dt>
-          <dd>15 días</dd>
+          <dd>{vigenciaDocumento(c)}</dd>
         </dl>
         <Folio folio={c.folio} className="mt-1 shrink-0" />
       </div>

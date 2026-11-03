@@ -33,6 +33,14 @@ export interface Cotizacion {
   estado: Estado;
   /** ISO. */
   creadaEn: string;
+  /** ISO del primer envío confirmado por la base. */
+  enviadaEn?: string;
+  /** ISO, quince días desde el primer envío. Ausente en borradores/legado sin evidencia. */
+  venceEn?: string;
+  revisionDe?: string;
+  revisionRaiz?: string;
+  sustituidaEn?: string;
+  tallerEmitido?: Taller;
   /** ISO de la última apertura del enlace público. */
   vistaEn?: string;
   /** El cliente abrió el enlace y el maestro aún no entra a verla. */

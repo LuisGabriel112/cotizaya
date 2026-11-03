@@ -3,8 +3,10 @@ import { Client } from "pg";
 import { describe } from "vitest";
 import { opcionesSsl } from "../scripts/migraciones";
 import type { Dueno } from "./pg-sesion";
+import { validarBaseDePruebas } from "./base-segura.ts";
 
 export const urlDeBase = process.env.SUPABASE_DB_URL;
+if (urlDeBase) validarBaseDePruebas(urlDeBase);
 
 // Sin base configurada la suite se salta en vez de fallar.
 export const suiteDeBase = urlDeBase ? describe : describe.skip;
