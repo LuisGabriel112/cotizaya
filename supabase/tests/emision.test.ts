@@ -42,8 +42,8 @@ suite("primer envío y vigencia", () => {
     expect(rows).toEqual([{tipo:"abierta",n:1},{tipo:"aceptada",n:1},{tipo:"enviada",n:1}]);
   });
   it("una cotización vencida no se acepta", async () => {
-    await emitir(); await comoPostgres(db);
-    await db.query("update quotes set sent_at=now()-interval '16 days',expires_at=now()-interval '1 day' where id=$1",[quote.id]);
+    await comoPostgres(db);
+    await db.query("update quotes set status='enviada',sent_at=now()-interval '16 days',expires_at=now()-interval '1 day' where id=$1",[quote.id]);
     await comoAnonimo(db);
     expect(await codigoDeError(db,"select public.aceptar_cotizacion($1)",[quote.public_slug])).toBe("22023");
   });

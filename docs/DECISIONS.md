@@ -18,3 +18,11 @@
 - Dependencias: elegir Next/eslint-config-next 16.4.1 (parche publicado el 14 de octubre)
   y Zod 4.6.6, sin mantener excepciones nuevas de antigüedad de paquetes. 16.4.4 se
   publicó el mismo día del trabajo; no es necesario para los advisories confirmados.
+- Usuario: permitir revisiones con historial. Se conserva cada oferta emitida y su
+  contenido público; una revisión crea borrador con nuevo folio/enlace y referencias al
+  padre/raíz. Repetir la petición reutiliza el borrador. Al emitir la nueva oferta, la
+  anterior deja de aceptar nuevas aprobaciones; una aceptación previa sigue registrada.
+- La revisión copia medidas/textos y usa precios actuales del catálogo. Conserva el
+  cupo de altas existente, sin excepción comercial nueva. Si falta un material, falla
+  atómicamente y el taller debe reponerlo. Las imágenes subidas usan rutas únicas; el
+  snapshot conserva la URL, no una firma o archivo PDF binario inmutable.

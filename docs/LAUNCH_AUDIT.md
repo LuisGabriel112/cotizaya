@@ -103,3 +103,10 @@ operación de SMS, experiencia de talleres reales. No se declaran aprobados.
   e inspeccionado con fecha/vencimiento correctos, sin recortes. No equivale a prueba en
   Android físico ni auditoría completa de accesibilidad. Detector: ocho avisos en archivos
   sin cambios (textura y fuentes estándar de PDF), no hallazgos nuevos en componentes editados.
+- T-13a / A-04: snapshots públicos de cada emisión y revisiones lineales vinculadas.
+  El perfil/catálogo posterior no cambia el contenido anterior. Revisión nueva con
+  precios actuales y cupo normal; al emitirse, invalida aceptación nueva de la previa.
+  Ocho regresiones nuevas y 97/97 tests SQL aprobados. Historial RPC no depende del
+  límite de 100 cotizaciones de la lista; está limitado al taller autenticado.
+  Datos previos al despliegue: snapshot del contenido disponible entonces, sin afirmar
+  que reconstruye un PDF histórico que ya hubiera sido alterado.
