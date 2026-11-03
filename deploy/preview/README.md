@@ -15,6 +15,14 @@ Entradas: http://100.113.167.30:3100/ y http://100.113.167.30:3100/demo/cotizaci
 Solo se publica en 127.0.0.1 y la IP Tailscale. No cambiar firewall, red externa ni SMTP.
 El contenedor Node no publica puerto propio en el host.
 
+Regresión de navegación desde otra computadora con las dependencias del proyecto:
+
+```bash
+PREVIEW_URL=http://100.113.167.30:3100 node deploy/preview/smoke.mjs
+```
+
+Comprueba el destino de la redirección y el clic del botón inferior de la landing.
+
 No copiar archivos .env al servidor de preview. El Dockerfile usa valores ficticios
 deliberadamente sin conexión a servicios externos y .dockerignore excluye .env*.
 El código subido con git archive no contiene archivos sin versionar ni secretos locales.
