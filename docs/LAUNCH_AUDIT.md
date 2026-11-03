@@ -67,3 +67,7 @@ operación de SMS, experiencia de talleres reales. No se declaran aprobados.
 - Audit también reporta uuid 9.0.1 transitivo de Mercado Pago (moderado, buffers de
   v3/v5/v6). El SDK instalado usa v4() sin argumentos en dist/utils/restClient/index.js.
   No se declara explotable aquí ni se fuerza un salto mayor del SDK sin necesidad.
+- T-08 / A-11 (P1): reproducidos tres bypass por DML directo: antedatar created_at
+  para no contar en el mes, borrar para recuperar cupo y alta ya aceptada. Migración
+  0010 fija fecha/estado/apertura e impide DELETE de quotes al dueño; la app no ofrece
+  esa operación. 77/77 pruebas SQL aprobadas, incluidas tres nuevas.

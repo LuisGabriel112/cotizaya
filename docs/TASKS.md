@@ -58,3 +58,28 @@ Plan inicial: el usuario revisa/marca el estado al integrar. Resultados en LAUNC
   consolidar riesgos/pasos manuales en informe final.
 - Aceptación: pnpm test/typecheck/eslint, SQL local, Playwright y build con resultados explícitos.
 - Verificación: scripts/check.sh en modo completo. Auth/sandbox y legal se registran como pendientes.
+
+## Ampliación por hallazgos reproducidos durante la ejecución
+
+### T-08 · Cerrar bypass del cupo mediante escrituras directas
+- Estado: pendiente de revisión; prioridad P1; depende de T-04; paralelo con T-09.
+- Archivos: specs/lanzamiento/cupo.feature; supabase/tests/cupo-lanzamiento.test.ts;
+  supabase/migrations/0010_cupo_antibypass.sql.
+- Hacer: impedir antedatar altas, alterar estado inicial y borrar para recuperar cupo.
+- Aceptación: sexta alta rechazada aunque mande fecha vieja; DELETE autenticado negado.
+- Verificación: pnpm exec vitest run supabase/tests con base local.
+
+### T-09 · Parchear dependencias con advisories confirmados
+- Estado: pendiente; prioridad P0; depende de T-01; paralelo con T-08.
+- Archivos: package.json, pnpm-lock.yaml; evidencia en auditoría y decisiones.
+- Hacer: parche de Next y Zod, alinear eslint-config-next; conservar controles pnpm.
+- Aceptación: audit sin avisos altos/críticos de esos paquetes y build sin bloqueo.
+- Verificación: pnpm audit --prod; pnpm build; tests y typecheck.
+
+### T-10 · CI y base de pruebas protegida
+- Estado: pendiente; prioridad P1; depende de T-09.
+- Archivos previstos: workflow CI; preparador seguro de base y su test; conexión de
+  tests y scripts/check.sh; excepciones documentadas si requiere dividir en subtareas.
+- Hacer: restringir tests destructivos a base local aislada; CI con Postgres y checks.
+- Aceptación: no usar .env real ni credenciales cloud; cero verificaciones ficticias.
+- Verificación: scripts/check.sh completo contra PostgreSQL efímero; revisar workflow.
