@@ -94,3 +94,12 @@ operación de SMS, experiencia de talleres reales. No se declaran aprobados.
   UUID internos en el JSON público. Migración 0012 limita los campos explícitamente,
   usa identificadores públicos y oculta borradores a anónimos, conservando preview del
   dueño. 89/89 tests SQL aprobados; esto no prueba inmunidad a toda enumeración/abuso.
+- T-12: dos regresiones confirman aceptación optimista antes de respuesta. Se confirma
+  solo tras éxito del servidor, se bloquea doble clic y se muestran errores. Siete pruebas
+  de confirmación/render aprobadas. La vista real no ofrece aceptar borradores/rechazadas.
+- Decisión del usuario actualizada: permitir revisiones con historial. Cada emisión se
+  conserva; correcciones en un borrador enlazado, sin alterar el enlace de la oferta previa.
+- QA acotada: hoja en 360/1280 px sin desborde horizontal; PDF de una página renderizado
+  e inspeccionado con fecha/vencimiento correctos, sin recortes. No equivale a prueba en
+  Android físico ni auditoría completa de accesibilidad. Detector: ocho avisos en archivos
+  sin cambios (textura y fuentes estándar de PDF), no hallazgos nuevos en componentes editados.

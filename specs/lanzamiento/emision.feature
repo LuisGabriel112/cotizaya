@@ -16,3 +16,7 @@ Característica: Primera emisión y vigencia
     Dada una cotización creada días antes de enviarse
     Entonces la fecha y vencimiento del PDF y la hoja usan el primer envío
     Y un borrador dice que sus quince días comienzan al enviarse
+  Escenario: Confirmación de aceptación
+    Cuando el cliente toca Aceptar
+    Entonces solo se muestra Aceptada tras confirmarlo el servidor
+    Y un error o vencimiento conserva el estado y muestra cómo reintentar

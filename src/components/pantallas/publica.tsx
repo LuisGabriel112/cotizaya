@@ -19,10 +19,12 @@ interface Props {
   pdfHref?: string;
   onAbierta: () => void;
   onAceptar: () => void;
+  aceptando?: boolean;
+  errorAceptacion?: string;
 }
 
 // Lo que ve el cliente al abrir el enlace. Solo esta cotización; nada más del taller.
-export function PantallaPublica({ cotizacion: c, taller, catalogo, demo = false, pdfHref, onAbierta, onAceptar }: Props) {
+export function PantallaPublica({ cotizacion: c, taller, catalogo, demo = false, pdfHref, onAbierta, onAceptar, aceptando = false, errorAceptacion }: Props) {
   const registrada = useRef(false);
 
   // Evento "abierta": una vez por visita.
@@ -34,6 +36,7 @@ export function PantallaPublica({ cotizacion: c, taller, catalogo, demo = false,
 
   if (!c) return <CotizacionNoDisponible />;
   const aceptada = c.estado === "aceptada";
+  const puedeAceptar = c.estado === "enviada" || c.estado === "vista" || demo;
 
   return (
     <main className="mx-auto max-w-md px-4 pt-4 pb-32">
@@ -50,7 +53,8 @@ export function PantallaPublica({ cotizacion: c, taller, catalogo, demo = false,
         </p>
       )}
 
-      <BarraAccion>{aceptada ? <EscribirAlTaller telefono={taller.telefono} /> : <Boton onClick={onAceptar}>Aceptar cotización</Boton>}</BarraAccion>
+      {errorAceptacion && <p role="alert" className="mt-5 border-2 border-rojo px-4 py-3 text-tinta">{errorAceptacion}</p>}
+      <BarraAccion>{aceptada || !puedeAceptar ? <EscribirAlTaller telefono={taller.telefono} /> : <Boton onClick={onAceptar} disabled={aceptando}>{aceptando ? "Confirmando aceptación…" : "Aceptar cotización"}</Boton>}</BarraAccion>
     </main>
   );
 }
