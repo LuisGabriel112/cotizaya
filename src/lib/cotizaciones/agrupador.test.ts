@@ -5,6 +5,14 @@ beforeEach(() => vi.useFakeTimers());
 afterEach(() => vi.useRealTimers());
 
 describe("crearAgrupador", () => {
+  it("vaciar espera el envío y detecta fallos previos del debounce",async()=>{
+    let resolver!:(v:void)=>void;
+    const enviar=vi.fn(()=>new Promise<void>(r=>{resolver=r;}));
+    const agrupador=crearAgrupador(400,enviar);agrupador.agregar("a",{cliente:"Ana"});
+    vi.advanceTimersByTime(400);
+    const listo=vi.fn();const p=agrupador.vaciar("a").then(listo);
+    expect(listo).not.toHaveBeenCalled();resolver();await p;expect(listo).toHaveBeenCalledOnce();
+  });
   it("junta los cambios de la misma cotización y los manda una vez al dejar de teclear", () => {
     const enviar = vi.fn();
     const agrupador = crearAgrupador(400, enviar);
