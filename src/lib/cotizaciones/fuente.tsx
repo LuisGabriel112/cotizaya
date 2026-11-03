@@ -16,7 +16,7 @@ export interface AccionesCotizaciones {
   guardarPartida: (id: string, partida: PartidaGuardada) => void;
   quitarPartida: (id: string, partidaId: string) => void;
   editar: (id: string, cambios: CambiosCotizacion) => void;
-  marcarEnviada: (id: string) => void;
+  marcarEnviada: (id: string) => void|Promise<void>;
   avisoVisto: (id: string) => void;
 }
 

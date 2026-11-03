@@ -11,7 +11,7 @@ function preparar(servidor: Partial<ServidorCotizaciones> = {}) {
   const despachar = vi.fn();
   const alFallar = vi.fn();
   const alAgotarCupo = vi.fn();
-  const agrupador = { agregar: vi.fn() };
+  const agrupador = { agregar: vi.fn(),vaciar:vi.fn().mockResolvedValue(undefined) };
   const completo: ServidorCotizaciones = {
     crearCotizacion: vi.fn().mockResolvedValue({ ok: true, cotizacion }),
     guardarPartida: vi.fn().mockResolvedValue(conFoto),
@@ -78,9 +78,9 @@ describe("crearAccionesOptimistas", () => {
     expect(agrupador.agregar).toHaveBeenCalledWith("c1", { cliente: "Ana" });
   });
 
-  it("marcarEnviada y avisoVisto despachan y avisan al servidor", () => {
+  it("marcarEnviada y avisoVisto despachan y avisan al servidor", async () => {
     const { acciones, despachar, servidor } = preparar();
-    acciones.marcarEnviada("c1");
+    await acciones.marcarEnviada("c1");
     acciones.avisoVisto("c1");
     expect(despachar).toHaveBeenCalledWith({ tipo: "enviada", id: "c1" });
     expect(despachar).toHaveBeenCalledWith({ tipo: "avisoVisto", id: "c1" });
@@ -90,7 +90,8 @@ describe("crearAccionesOptimistas", () => {
 
   it.each(["marcarEnviada", "avisoVisto"] as const)("si %s falla en el servidor se avisa", async (nombre) => {
     const { acciones, alFallar } = preparar({ [nombre]: vi.fn().mockRejectedValue(new Error("sin señal")) });
-    acciones[nombre]("c1");
+    if(nombre==="marcarEnviada") await expect(acciones[nombre]("c1")).rejects.toThrow();
+    else acciones[nombre]("c1");
     await tick();
     expect(alFallar).toHaveBeenCalledOnce();
   });
@@ -115,5 +116,13 @@ describe("crearAccionesOptimistas", () => {
     acciones.marcarEnviada("c1");
     await tick();
     expect(alFallar).not.toHaveBeenCalled();
+  });
+  it("emitir espera las partidas pendientes antes de congelar",async()=>{
+    let resolver!:(v:PartidaGuardada)=>void;
+    const {acciones,servidor,agrupador}=preparar({guardarPartida:vi.fn(()=>new Promise<PartidaGuardada>(r=>{resolver=r;}))});
+    acciones.guardarPartida("c1",partida);const envio=acciones.marcarEnviada("c1");
+    await tick();expect(servidor.marcarEnviada).not.toHaveBeenCalled();
+    resolver(conFoto);await envio;expect(agrupador.vaciar).toHaveBeenCalledWith("c1");
+    expect(servidor.marcarEnviada).toHaveBeenCalledOnce();
   });
 });
