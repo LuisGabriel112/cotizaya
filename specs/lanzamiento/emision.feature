@@ -20,3 +20,8 @@ Característica: Primera emisión y vigencia
     Cuando el cliente toca Aceptar
     Entonces solo se muestra Aceptada tras confirmarlo el servidor
     Y un error o vencimiento conserva el estado y muestra cómo reintentar
+  Escenario: Compartir sin perder cambios pendientes
+    Dado que hay partidas en vuelo o edición agrupada pendiente
+    Cuando el taller envía por WhatsApp
+    Entonces se espera la confirmación antes de emitir el snapshot y abrir el mensaje
+    Y si falla una escritura no se emite ni se comparte una oferta incompleta

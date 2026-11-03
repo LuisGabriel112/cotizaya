@@ -32,4 +32,11 @@ describe("estados visibles de aceptación",()=>{
     expect(pintar("aceptada")).toContain("ya sabe que la aceptaste");
     expect(pintar("aceptada")).not.toContain("Aceptar cotización");
   });
+  it("una oferta sustituida conserva contenido y pide la revisión vigente",()=>{
+    const html=renderToStaticMarkup(createElement(PantallaPublica,{
+      cotizacion:{...COTIZACIONES_SEMILLA[0]!,estado:"enviada",sustituidaEn:"2026-11-02T18:00:00Z"},
+      taller:TALLER,catalogo,onAbierta:()=>{},onAceptar:()=>{},
+    }));
+    expect(html).toContain("El taller emitió una revisión");expect(html).not.toContain("Aceptar cotización");
+  });
 });

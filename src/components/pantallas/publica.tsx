@@ -36,7 +36,7 @@ export function PantallaPublica({ cotizacion: c, taller, catalogo, demo = false,
 
   if (!c) return <CotizacionNoDisponible />;
   const aceptada = c.estado === "aceptada";
-  const puedeAceptar = c.estado === "enviada" || c.estado === "vista" || demo;
+  const puedeAceptar = !c.sustituidaEn && (c.estado === "enviada" || c.estado === "vista" || demo);
 
   return (
     <main className="mx-auto max-w-md px-4 pt-4 pb-32">
@@ -54,6 +54,7 @@ export function PantallaPublica({ cotizacion: c, taller, catalogo, demo = false,
       )}
 
       {errorAceptacion && <p role="alert" className="mt-5 border-2 border-rojo px-4 py-3 text-tinta">{errorAceptacion}</p>}
+      {c.sustituidaEn&&<p role="status" className="mt-5 border-2 border-tinta px-4 py-3">El taller emitió una revisión. Pídele el enlace actualizado; esta oferta queda como registro.</p>}
       <BarraAccion>{aceptada || !puedeAceptar ? <EscribirAlTaller telefono={taller.telefono} /> : <Boton onClick={onAceptar} disabled={aceptando}>{aceptando ? "Confirmando aceptación…" : "Aceptar cotización"}</Boton>}</BarraAccion>
     </main>
   );
