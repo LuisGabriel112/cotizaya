@@ -56,3 +56,14 @@ operación de SMS, experiencia de talleres reales. No se declaran aprobados.
   el error privado. El proveedor sigue simulado; no hubo consulta a Mercado Pago real.
 - Decisión del usuario: la vigencia será 15 días desde el primer envío. Pendiente su
   respuesta sobre congelar emitidas frente a permitir revisiones con historial.
+- T-07a / A-06: aviso neutral de retorno de Checkout y valores no reconocidos ignorados.
+  Siete pruebas nuevas aprobadas. EstadoPlan sigue leyendo el plan real desde el servidor.
+- A-10 / P0 dependencias: build detenido por Next.js 16.4.0 y audit confirma dos
+  avisos críticos y uno alto para Next; Zod 4.6.5 tiene un aviso alto adicional.
+  No se ha demostrado explotación del proyecto: se confirma versión afectada, no ataque.
+  Fuentes: https://github.com/vercel/next.js/security/advisories/GHSA-2464-fhr4-w9xw,
+  https://github.com/vercel/next.js/security/advisories/GHSA-673q-mjm6-r5xr y pnpm audit.
+  Actualización de parche propuesta: Next/eslint-config-next 16.4.4 y Zod 4.6.6.
+- Audit también reporta uuid 9.0.1 transitivo de Mercado Pago (moderado, buffers de
+  v3/v5/v6). El SDK instalado usa v4() sin argumentos en dist/utils/restClient/index.js.
+  No se declara explotable aquí ni se fuerza un salto mayor del SDK sin necesidad.
