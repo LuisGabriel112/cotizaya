@@ -192,10 +192,11 @@ export function aCambiosFila(cambios: CambiosCotizacion): Record<string, unknown
 
 export interface JsonPublico {
   quote: Omit<FilaQuote, "quote_items">;
-  items: FilaItem[];
+  items: (Omit<FilaItem,"material_id"> & {material_id?: string | null})[];
   taller: Omit<FilaTaller, "plan_until"> & Partial<Pick<FilaTaller, "plan_until">>;
 }
 
 export function aVistaPublica(json: JsonPublico): { cotizacion: Cotizacion; taller: Taller } {
-  return { cotizacion: aCotizacion({ ...json.quote, quote_items: json.items }), taller: aTaller({ plan_until: null, ...json.taller }) };
+  const items = json.items.map((item)=>({...item,material_id:item.material_id ?? null}));
+  return { cotizacion: aCotizacion({ ...json.quote, quote_items: items }), taller: aTaller({ plan_until: null, ...json.taller }) };
 }

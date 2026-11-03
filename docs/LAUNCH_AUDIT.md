@@ -86,3 +86,11 @@ operación de SMS, experiencia de talleres reales. No se declaran aprobados.
   y typecheck. Tests ya no cargan .env.local; CI preparada, aún no ejecutada en GitHub.
 - Playwright: primera ejecución 18/19. Falló navegación captura→vista previa en el test
   existente; se está reproduciendo de forma aislada antes de atribuir causa o cambiarlo.
+- Seguimiento Playwright: el caso aislado pasó. Al limitar a dos workers para evitar
+  competencia de compilación local, la suite completa pasó 19/19. No se modificó la
+  aserción ni el comportamiento de la app para ocultar el fallo intermitente.
+- CHECK completo ejecutado: lint, typecheck, 653 tests, 19 E2E y build, todos aprobados.
+- T-11 / A-12 (P1 privacidad): dos regresiones confirman borrador accesible por slug y
+  UUID internos en el JSON público. Migración 0012 limita los campos explícitamente,
+  usa identificadores públicos y oculta borradores a anónimos, conservando preview del
+  dueño. 89/89 tests SQL aprobados; esto no prueba inmunidad a toda enumeración/abuso.

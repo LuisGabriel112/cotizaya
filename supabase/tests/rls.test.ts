@@ -159,6 +159,8 @@ suite("folio, enlace público y primer ingreso", () => {
   it("la vista pública trae la cotización y el contacto del taller, nada más", async () => {
     const cot = await crearCotizacion(db, tallerA, "Leticia");
     await agregarPartida(db, tallerA, cot.id);
+    await comoUsuario(db,a);
+    await db.query("select public.emitir_cotizacion($1)",[cot.id]);
     await comoAnonimo(db);
     const { rows } = await db.query<{ v: Record<string, Record<string, unknown>> }>(
       "select public.cotizacion_publica($1) as v",

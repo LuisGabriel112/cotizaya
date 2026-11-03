@@ -187,6 +187,13 @@ describe("aTaller y aCambiosFila", () => {
 });
 
 describe("aVistaPublica", () => {
+  it("la foto basta para mostrar una partida sin UUID interno de material", () => {
+    const item = {...ITEM,material_id:undefined};
+    const taller = {nombre:"El Faro",ciudad:"",telefono:"",condiciones:"",plan:"gratis" as const,logo_url:null};
+    const vista = aVistaPublica({quote:QUOTE,items:[item],taller});
+    expect(vista.cotizacion.partidas[0]?.materialId).toBe("");
+    expect(vista.cotizacion.partidas[0]?.material?.precioCentavos).toBe(18000);
+  });
   it("arma cotización y taller desde el JSON de cotizacion_publica", () => {
     const { quote_items: items, ...quote } = QUOTE;
     const taller = { nombre: "El Faro", ciudad: "", telefono: "2290000001", condiciones: "", plan: "fundador" as const, logo_url: null };
