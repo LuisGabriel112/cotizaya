@@ -10,3 +10,9 @@ Característica: Frescura de la firma de Mercado Pago
   Escenario: Encabezado ambiguo o timestamp futuro
     Dada una firma válida con ts duplicado, no numérico o fuera de ventana futura
     Entonces la firma no autoriza el pago
+  Escenario: El recurso consultado no coincide con el firmado
+    Dado que la API devuelve un ID de pago distinto al ID firmado
+    Entonces no se registra el pago y se responde con un error recuperable
+  Escenario: Error de configuración
+    Dado que las dependencias del webhook no se pueden crear
+    Entonces se devuelve 503 sin incluir secretos en el cuerpo ni los logs

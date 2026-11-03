@@ -50,3 +50,9 @@ operación de SMS, experiencia de talleres reales. No se declaran aprobados.
   partidas válidas. Se conserva el protocolo de la app; su recálculo adicional ya no es
   necesario para persistir y no puede sobrescribir cifras calculadas por PostgreSQL.
   Pendiente conciliar datos históricos antes de migrar: no se reescribieron cotizaciones antiguas.
+- T-06: siete nuevas regresiones reproducidas y corregidas (ID de recurso distinto,
+  identificadores inválidos, query duplicada y excepción de configuración). 56/56 tests
+  dirigidos de pagos/ruta aprobados; el backend retorna 502/503 recuperable sin filtrar
+  el error privado. El proveedor sigue simulado; no hubo consulta a Mercado Pago real.
+- Decisión del usuario: la vigencia será 15 días desde el primer envío. Pendiente su
+  respuesta sobre congelar emitidas frente a permitir revisiones con historial.

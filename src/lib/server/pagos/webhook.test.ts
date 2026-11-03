@@ -75,4 +75,16 @@ describe("procesarNotificacion", () => {
     const sinBase = preparar({ registrarPago: vi.fn().mockRejectedValue(new Error("caída")) });
     expect(await procesarNotificacion(ENTRADA, sinBase)).toBe(500);
   });
+
+  it("no registra un pago cuyo ID no corresponde al firmado", async () => {
+    const deps = preparar({ obtenerPago: vi.fn().mockResolvedValue({ ...PAGO, id: 999 }) });
+    expect(await procesarNotificacion(ENTRADA, deps)).toBe(502);
+    expect(deps.registrarPago).not.toHaveBeenCalled();
+  });
+
+  it.each(["../123", "123/otra-ruta", " 123", "x".repeat(201)])("rechaza identificador inválido", async (dataId) => {
+    const deps = preparar();
+    expect(await procesarNotificacion({ ...ENTRADA, dataId }, deps)).toBe(400);
+    expect(deps.obtenerPago).not.toHaveBeenCalled();
+  });
 });

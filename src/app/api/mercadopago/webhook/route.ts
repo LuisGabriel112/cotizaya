@@ -13,11 +13,16 @@ async function leerCuerpo(req: Request): Promise<{ type?: string; data?: { id?: 
 
 export async function POST(req: Request): Promise<Response> {
   const parametros = new URL(req.url).searchParams;
+  if (["data.id", "id", "type", "topic"].some((nombre) => parametros.getAll(nombre).length > 1)) return new Response(null, { status: 400 });
   const cuerpo = await leerCuerpo(req);
   const tipo = parametros.get("type") ?? parametros.get("topic") ?? cuerpo?.type ?? "";
   const dataId = parametros.get("data.id") ?? parametros.get("id") ?? String(cuerpo?.data?.id ?? "");
   const firma = req.headers.get("x-signature") ?? "";
   const requestId = req.headers.get("x-request-id") ?? "";
-  const status = await procesarNotificacion({ tipo, dataId, firma, requestId }, dependenciasWebhook());
-  return new Response(null, { status });
+  try {
+    const status = await procesarNotificacion({ tipo, dataId, firma, requestId }, dependenciasWebhook());
+    return new Response(null, { status });
+  } catch {
+    return new Response(null, { status: 503 });
+  }
 }
