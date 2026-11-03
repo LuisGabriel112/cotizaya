@@ -35,6 +35,8 @@ export interface FilaQuote {
   /** La vista pública no lo trae. */
   aviso_pendiente?: boolean;
   created_at: string;
+  sent_at?: string | null;
+  expires_at?: string | null;
   quote_items?: FilaItem[];
 }
 
@@ -108,6 +110,8 @@ export function aCotizacion(q: FilaQuote): Cotizacion {
     garantiaSalitre: q.garantia_salitre,
     estado: q.status,
     creadaEn: q.created_at,
+    ...(q.sent_at ? { enviadaEn: q.sent_at } : {}),
+    ...(q.expires_at ? { venceEn: q.expires_at } : {}),
     avisoPendiente: q.aviso_pendiente ?? false,
     ...(q.viewed_at ? { vistaEn: q.viewed_at } : {}),
   };

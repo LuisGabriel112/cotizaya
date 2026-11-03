@@ -12,3 +12,7 @@ Característica: Primera emisión y vigencia
     Y repetir la aceptación no duplica eventos
   Escenario: Apertura repetida
     Entonces la primera apertura queda registrada una sola vez
+  Escenario: Fecha y vigencia en documentos
+    Dada una cotización creada días antes de enviarse
+    Entonces la fecha y vencimiento del PDF y la hoja usan el primer envío
+    Y un borrador dice que sus quince días comienzan al enviarse

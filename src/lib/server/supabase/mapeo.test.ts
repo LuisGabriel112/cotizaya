@@ -71,6 +71,11 @@ const plantilla = (cambios: Partial<FilaPlantilla>): FilaPlantilla => ({
 });
 
 describe("aCotizacion", () => {
+  it("conserva fecha de emisión y vencimiento desde la base", () => {
+    expect(aCotizacion({...QUOTE,sent_at:"2026-11-02T18:00:00Z",expires_at:"2026-11-17T18:00:00Z"})).toMatchObject({
+      enviadaEn:"2026-11-02T18:00:00Z",venceEn:"2026-11-17T18:00:00Z",
+    });
+  });
   it("convierte la fila con sus partidas ordenadas y la foto del material", () => {
     const c = aCotizacion(QUOTE);
     expect(c).toMatchObject({
