@@ -1,6 +1,8 @@
 # Tareas de preparación comercial
 
 Plan inicial: el usuario revisa/marca el estado al integrar. Resultados en LAUNCH_AUDIT.
+Los estados pendientes indican revisión/integración, no ausencia de implementación;
+los commits y pruebas de cierre están en LAUNCH_AUDIT.
 
 ### T-01 · Auditoría y verificador real
 - Estado: pendiente de revisión; prioridad P0 habilitador; depende de: ninguna.
@@ -83,3 +85,38 @@ Plan inicial: el usuario revisa/marca el estado al integrar. Resultados en LAUNC
 - Hacer: restringir tests destructivos a base local aislada; CI con Postgres y checks.
 - Aceptación: no usar .env real ni credenciales cloud; cero verificaciones ficticias.
 - Verificación: scripts/check.sh completo contra PostgreSQL efímero; revisar workflow.
+
+### T-11 · Minimizar datos de enlaces públicos
+- Estado: pendiente de revisión; prioridad P1; depende de T-05a.
+- Archivos: spec privacidad, migración 0012, tests SQL, fixtures y mapeo de respuesta.
+- Hacer: ocultar borradores a anónimos y reemplazar serialización de filas por lista positiva.
+- Aceptación: sin UUID privados ni columnas futuras expuestas; preview del dueño conservada.
+- Verificación: pnpm exec vitest run supabase/tests src/lib/server/supabase/mapeo.test.ts.
+
+### T-12 · Confirmar aceptación desde el servidor
+- Estado: pendiente de revisión; prioridad P1; depende de T-05a.
+- Archivos: vista pública y su test, pantalla pública y test, spec emisión.
+- Hacer: confirmar tras respuesta, error recuperable, botón ocupado y estados válidos.
+- Verificación: tests de vista y pantalla pública; Playwright demo.
+
+### T-13 · Revisiones con historial (decisión del usuario)
+- Estado: pendiente de revisión; prioridad P1; depende de T-04/T-05.
+- Subtareas: a) migraciones 0013–0014 y pruebas SQL; b) modelo/mapeo/acciones optimistas;
+  c) Server Actions, botón de revisión e historial completo autenticado.
+- Hacer: snapshots emitidos, revisión lineal idempotente, invalidar aceptación de oferta
+  sustituida al emitir la siguiente; conservar oferta anterior y su aceptación registrada.
+- Aceptación: historial limitado al dueño, sin cambiar enlaces anteriores ni editar el pasado.
+- Verificación: tests revisiones SQL, acciones, mapeo; E2E autenticado pendiente de staging.
+
+### T-14 · Emitir tras confirmar escrituras
+- Estado: pendiente de revisión; prioridad P0 de integridad; depende de T-13.
+- Subtareas: a) cola de confirmaciones/debounce y navegación; b) integración en acciones
+  optimistas/proveedor; c) enlace WhatsApp con emisión confirmada y manejo de errores.
+- Hacer: esperar cambios en vuelo y debounce; no compartir al fallar una escritura.
+- Verificación: tests confirmaciones/agrupador/optimista; Playwright de captura y envío.
+
+### T-15 · Verificar TLS del migrador remoto
+- Estado: pendiente de revisión; prioridad P1; depende de T-01.
+- Archivos: supabase/scripts/migraciones.ts y su test; operación documentada.
+- Hacer: eliminar rejectUnauthorized:false remoto; mantener DB local sin TLS.
+- Verificación: pnpm exec vitest run supabase/tests/migraciones.test.ts y typecheck.

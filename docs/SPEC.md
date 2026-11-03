@@ -31,9 +31,15 @@ la mención a suscripciones en la guía original no describe el código implemen
 
 ## Decisiones que necesitan revisión humana
 
-Rechazo por cliente y UX de revisión de cotizaciones emitidas no están implementados.
-La vigencia visible del PDF es de 15 días desde creación, pero no se hace cumplir en
-aceptación; acordar el instante de emisión y tratamiento de documentos ya existentes.
+El usuario eligió 15 días desde el primer envío y revisiones con historial. Cada oferta
+emitida conserva su contenido; corregir crea un borrador enlazado con nuevo folio/enlace.
+Se reutiliza un borrador de revisión existente. Al emitirse una revisión, la anterior
+conserva su registro pero no admite nuevas aceptaciones. Se mantienen cupo y precios
+actuales del catálogo para la revisión. Fechas y contenido históricos sin evidencia
+necesitan conciliación antes de migrar producción.
+
+Rechazo explícito por el cliente no está implementado ni tiene criterio de aceptación
+en specs/fase-3/publica.feature; definir si entra al piloto antes de ampliarlo.
 No inventar políticas de reembolsos/contracargos ni textos legales aprobados.
 
 ## Fuera de esta ejecución

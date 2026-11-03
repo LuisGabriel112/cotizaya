@@ -3,6 +3,11 @@
 Base: main@74bce70. Estado inicial: 538 tests aprobados, 49 omitidos de base; typecheck
 y ESLint src aprobados. No se inspeccionaron valores de secretos ni producción.
 
+Estado final local: 683/683 tests sin omisiones, 19/19 E2E demo, lint, typecheck y
+build aprobados. Catorce migraciones aplicadas desde cero en PostgreSQL efímero.
+Correcciones preparadas para revisión; **piloto y lanzamiento público pendientes** de
+staging, conciliación de datos, Auth/OTP, sandbox MP, restauración y validación humana.
+
 | ID | Prioridad | Evidencia y ubicación | Impacto / acción / prueba |
 | --- | --- | --- | --- |
 | A-01 | P0 | src/lib/server/pagos/firma.ts: verificarFirma solo compara HMAC | Acepta timestamp antiguo; añadir ventana temporal y casos de replay/futuro/milisegundos. |
@@ -54,8 +59,7 @@ operación de SMS, experiencia de talleres reales. No se declaran aprobados.
   identificadores inválidos, query duplicada y excepción de configuración). 56/56 tests
   dirigidos de pagos/ruta aprobados; el backend retorna 502/503 recuperable sin filtrar
   el error privado. El proveedor sigue simulado; no hubo consulta a Mercado Pago real.
-- Decisión del usuario: la vigencia será 15 días desde el primer envío. Pendiente su
-  respuesta sobre congelar emitidas frente a permitir revisiones con historial.
+- Decisiones del usuario: vigencia de 15 días desde el primer envío y revisiones con historial.
 - T-07a / A-06: aviso neutral de retorno de Checkout y valores no reconocidos ignorados.
   Siete pruebas nuevas aprobadas. EstadoPlan sigue leyendo el plan real desde el servidor.
 - A-10 / P0 dependencias: build detenido por Next.js 16.4.0 y audit confirma dos
@@ -63,7 +67,7 @@ operación de SMS, experiencia de talleres reales. No se declaran aprobados.
   No se ha demostrado explotación del proyecto: se confirma versión afectada, no ataque.
   Fuentes: https://github.com/vercel/next.js/security/advisories/GHSA-2464-fhr4-w9xw,
   https://github.com/vercel/next.js/security/advisories/GHSA-673q-mjm6-r5xr y pnpm audit.
-  Actualización de parche propuesta: Next/eslint-config-next 16.4.4 y Zod 4.6.6.
+  Parche final: Next/eslint-config-next 16.4.1 y Zod 4.6.6; ver decisiones de antigüedad.
 - Audit también reporta uuid 9.0.1 transitivo de Mercado Pago (moderado, buffers de
   v3/v5/v6). El SDK instalado usa v4() sin argumentos en dist/utils/restClient/index.js.
   No se declara explotable aquí ni se fuerza un salto mayor del SDK sin necesidad.
@@ -110,3 +114,30 @@ operación de SMS, experiencia de talleres reales. No se declaran aprobados.
   límite de 100 cotizaciones de la lista; está limitado al taller autenticado.
   Datos previos al despliegue: snapshot del contenido disponible entonces, sin afirmar
   que reconstruye un PDF histórico que ya hubiera sido alterado.
+- T-13b/c: botón de revisión, protección de la ruta de edición de versiones emitidas,
+  historial privado por RPC (sin recorte a las últimas 100), DTO y snapshot de taller
+  conectados a la app. Pruebas de acciones autorizadas/mapeo/render aprobadas; recorrido
+  autenticado de navegador pendiente de Supabase staging.
+- T-14 / A-13 (P0 integridad): src/lib/cotizaciones/optimista.ts emitía sin esperar
+  guardarPartida y src/lib/cotizaciones/agrupador.ts no esperaba el debounce. Reproducido
+  con promesas pendientes y corregido con confirmaciones por cotización; WhatsApp navega
+  solo después de éxito. Veinte tests dirigidos y flujo E2E de captura/envío aprobados.
+- T-15 / A-14 (P1 transporte): supabase/scripts/migraciones.ts devolvía
+  rejectUnauthorized:false para conexiones remotas. Regresión reproducida/corregida;
+  cuatro tests y typecheck aprobados después del CHECK completo. No se abrió conexión
+  remota; cualquier CA propia debe provisionarse/verificarse en staging.
+
+## Límites de esta verificación
+
+- Pagos/servicios externos simulados por dependencias inyectadas; no se hizo pago sandbox
+  real ni se consultó configuración de Auth de producción. La mención al OTP fijo del
+  documento anterior sigue siendo un bloqueo operativo por verificar, no un ataque probado.
+- PostgreSQL/RLS real con stub de Auth/Storage no sustituye Supabase/PostgREST de staging.
+- E2E Playwright cubre demo, captura, WhatsApp interceptado, PWA, guía y landing. No cubre
+  registro real, cobro real ni historial autenticado end-to-end.
+- Cobertura dirigida de siete módulos críticos alcanzó 100% de líneas antes de las
+  últimas tareas de revisiones/cola; no se afirma cobertura global completa del proyecto.
+- PDF de QA: una página, 4012 bytes, contenido/fechas inspeccionados. Se conserva contenido
+  por snapshot, no identidad binaria/criptográfica de PDFs regenerados ni assets externos.
+- Revisión con material eliminado se rechaza atómicamente; recuperación del archivo
+  requiere decidir un flujo adicional. No se oculta el fallo ni se deja borrador parcial.

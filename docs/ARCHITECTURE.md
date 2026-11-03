@@ -34,6 +34,17 @@ Añadir migraciones incrementales, nunca reescribir las ya aplicadas. Los cambio
 se ejecutan exclusivamente en PostgreSQL local desechable con stub de Auth/Storage;
 esto prueba PostgreSQL/RLS, no equivale a probar Supabase Auth o PostgREST completos.
 
+Migraciones preparadas 0008–0014: credited_at permanente por pago; cálculo y bloqueos
+transaccionales; cupo con altas no antedatables; sent_at/expires_at; respuesta pública
+con lista positiva; issued_snapshot por emisión; revision_of_id/revision_root_id y
+superseded_at. RPCs emitir/revisar/historial validan el taller server-side. La revisión
+conserva versiones previas, toma precios actuales y exige materiales aún existentes;
+fallos revierten toda la creación. Ninguna migración se aplicó en nube.
+
+La emisión espera confirmaciones de partidas y del debounce de edición. WhatsApp solo
+navega tras confirmar la emisión. Se conserva el flujo optimista durante la captura;
+el fallo de una escritura impide compartir y se recuperan datos del servidor.
+
 ## Verificación
 
 scripts/check.sh: ESLint src, typecheck, Vitest y, en modo completo, base local,

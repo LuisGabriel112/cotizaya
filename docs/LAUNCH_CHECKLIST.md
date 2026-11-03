@@ -2,11 +2,11 @@
 
 ## Antes del piloto controlado
 
-- [ ] Corregir y reproducir A-01/A-02/A-03 con regresiones.
+- [x] Corregir y reproducir A-01/A-02/A-03 con regresiones locales.
 - [ ] Revisar cambios y migraciones; aplicarlos solo con autorización y respaldo.
 - [ ] Probar aislamiento con PostgreSQL real y roles; luego con Supabase de staging.
-- [ ] Acordar y probar inmutabilidad, emisión, aceptación y vigencia de cotizaciones.
-- [ ] Completar suite, typecheck, lint, E2E y build; registrar omisiones.
+- [x] Acordar y probar localmente versiones emitidas, aceptación y vigencia desde envío.
+- [x] Suite, typecheck, lint, 19 E2E demo y build; límites de alcance registrados.
 - [ ] Integrar los cambios pendientes del checkout original por revisión separada.
 - [ ] Auth de pruebas: registro/ingreso/expiración sin OTP fijo utilizable por usuarios reales.
 - [ ] Sandbox MP: pago aprobado/pendiente/rechazado y reintentos, sin pagos reales.
