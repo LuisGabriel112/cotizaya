@@ -27,3 +27,12 @@ PDF pequeño en tests. Se requieren regresiones de base para confirmar el alcanc
 Configuración real Auth/OTP/CAPTCHA/rate limits, secretos de Vercel, aplicación de RLS y
 migraciones desplegadas, backups/PITR y restauración, cuentas sandbox MP, política legal,
 operación de SMS, experiencia de talleres reales. No se declaran aprobados.
+
+## Cierres de tareas
+
+- T-01: baseline registrado; PostgreSQL local desechable ejecutó 53/53 tests de base.
+- T-02 / A-01: reproducido (9 nuevas regresiones fallaban) y corregido. 26/26 tests
+  de firma; reloj inyectado, ventana ±300 s, segundos/ms y rechazo de duplicados.
+  No se ha validado la cadencia de reintentos en sandbox.
+  Referencia primaria: https://github.com/mercadopago/sdk-nodejs/blob/master/docs/webhooks.md
+  (tolerancia de 300 s, reloj sincronizado, deduplicación y estado desde API).
