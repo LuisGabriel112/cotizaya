@@ -1,21 +1,11 @@
 import { catalogoSoloCroquis } from "@/lib/cotizaciones/catalogo";
 import { resumir, type Resumen } from "@/lib/cotizaciones/resumen";
 import { ACABADOS, type Cotizacion, type PartidaGuardada } from "@/lib/cotizaciones/tipos";
+import { fechaDocumento, vigenciaDocumento } from "@/lib/cotizaciones/vigencia";
 import { formatCentavos, formatFolio, formatMedidas } from "@/lib/format";
 import type { VistaPublica } from "@/lib/server/supabase/publica";
 import { formatTelefono } from "@/lib/telefono";
 import type { DocumentoPdf, RenglonPdf, TotalesPdf } from "./tipos";
-
-// Fuentes estándar del PDF (WinAnsi): sin "−" tipográfico; el descuento usa "-".
-const fechaLarga = new Intl.DateTimeFormat("es-MX", {
-  day: "numeric", month: "long", year: "numeric", timeZone: "America/Mexico_City",
-});
-
-function vigencia(creadaEn: string): string {
-  const fecha = new Date(creadaEn);
-  fecha.setUTCDate(fecha.getUTCDate() + 15);
-  return `Vigencia: 15 días, hasta el ${fechaLarga.format(fecha)}`;
-}
 
 function extrasDe(cotizacion: Cotizacion): string[] {
   const extras: string[] = [];
@@ -52,8 +42,8 @@ export function armarDocumento({ cotizacion, taller }: VistaPublica): DocumentoP
   const renglones = resumen.renglones.flatMap(({ partida, resultado }) =>
     resultado.ok ? [renglonDe(partida, resultado.importeCentavos)] : []);
   return {
-    folio: formatFolio(cotizacion.folio), fecha: fechaLarga.format(new Date(cotizacion.creadaEn)),
-    vigencia: vigencia(cotizacion.creadaEn), cliente: cotizacion.cliente,
+    folio: formatFolio(cotizacion.folio), fecha: fechaDocumento(cotizacion),
+    vigencia: `Vigencia: ${vigenciaDocumento(cotizacion)}`, cliente: cotizacion.cliente,
     taller: { nombre: taller.nombre, ciudad: taller.ciudad, telefono: formatTelefono(taller.telefono),
       ...(taller.logoUrl && { logoUrl: taller.logoUrl }) },
     renglones, extras: extrasDe(cotizacion), totales: totalesDe(resumen, cotizacion),
