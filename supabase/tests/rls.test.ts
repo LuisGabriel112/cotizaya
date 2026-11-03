@@ -195,6 +195,9 @@ suite("folio, enlace público y primer ingreso", () => {
 
   it("aceptar desde el enlace deja la cotización aceptada", async () => {
     const cot = await crearCotizacion(db, tallerA, "Leticia");
+    await agregarPartida(db,tallerA,cot.id);
+    await comoUsuario(db,a);
+    await db.query("select public.emitir_cotizacion($1)",[cot.id]);
     await comoAnonimo(db);
     await db.query("select public.aceptar_cotizacion($1)", [cot.public_slug]);
     await comoPostgres(db);

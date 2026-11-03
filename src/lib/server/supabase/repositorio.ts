@@ -66,8 +66,7 @@ export class RepositorioSupabase implements RepositorioCotizaciones {
   }
 
   async marcarEnviada(id: string): Promise<void> {
-    sinError(await this.db.from("quotes").update({ status: "enviada" }).eq("id", id).eq("status", "borrador"));
-    sinError(await this.db.from("quote_events").insert({ quote_id: id, workshop_id: this.workshopId, tipo: "enviada" }));
+    sinError(await this.db.rpc("emitir_cotizacion", { p_id: id }));
   }
 
   async apagarAviso(id: string): Promise<void> {

@@ -1,0 +1,14 @@
+# language: es
+Característica: Primera emisión y vigencia
+  Escenario: Primer envío
+    Cuando el dueño emite una cotización en borrador con partidas
+    Entonces se fija la fecha de envío y vencimiento quince días después
+    Y la misma transacción registra un solo evento enviada
+  Escenario: Repetir envío
+    Cuando el dueño vuelve a compartir una cotización emitida
+    Entonces no cambia su fecha de envío ni su vencimiento ni duplica el evento
+  Escenario: Aceptación pública
+    Entonces solo se puede aceptar una cotización emitida y vigente
+    Y repetir la aceptación no duplica eventos
+  Escenario: Apertura repetida
+    Entonces la primera apertura queda registrada una sola vez

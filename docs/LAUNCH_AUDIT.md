@@ -71,3 +71,8 @@ operación de SMS, experiencia de talleres reales. No se declaran aprobados.
   para no contar en el mes, borrar para recuperar cupo y alta ya aceptada. Migración
   0010 fija fecha/estado/apertura e impide DELETE de quotes al dueño; la app no ofrece
   esa operación. 77/77 pruebas SQL aprobadas, incluidas tres nuevas.
+- T-05a: cinco regresiones de emisión fallaban antes del cambio. Migración 0011 fija
+  sent_at/expires_at desde el primer envío (15 días), registra envío/aceptación/apertura
+  una vez y protege el estado por RPC. 92/92 tests dirigidos SQL+repositorio aprobados.
+  El backfill de fechas solo usa eventos de envío existentes; documentos históricos sin
+  evidencia quedan pendientes de conciliación y no se pueden aceptar como vigentes.

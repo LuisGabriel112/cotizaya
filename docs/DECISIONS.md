@@ -13,3 +13,8 @@
 - Sin dependencias nuevas. PostgreSQL local efímero para pruebas; no tocar laguna.
 - TASKS describe el plan; los cierres se registran en LAUNCH_AUDIT y commits para que
   el usuario revise y marque las tareas al mergear.
+- Usuario: vigencia de 15 días desde el primer envío. La fecha se registra en base y
+  no se renueva al volver a compartir. No inferir envío de un timestamp de creación.
+- Dependencias: elegir Next/eslint-config-next 16.4.1 (parche publicado el 14 de octubre)
+  y Zod 4.6.6, sin mantener excepciones nuevas de antigüedad de paquetes. 16.4.4 se
+  publicó el mismo día del trabajo; no es necesario para los advisories confirmados.
