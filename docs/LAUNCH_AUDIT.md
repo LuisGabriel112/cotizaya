@@ -36,3 +36,9 @@ operación de SMS, experiencia de talleres reales. No se declaran aprobados.
   No se ha validado la cadencia de reintentos en sandbox.
   Referencia primaria: https://github.com/mercadopago/sdk-nodejs/blob/master/docs/webhooks.md
   (tolerancia de 300 s, reloj sincronizado, deduplicación y estado desde API).
+- T-03 / A-02: reproducidos replay de estados y reutilización del pago para otro
+  taller/periodo. Migración 0008 preparada; marca credited_at, inserción concurrente
+  idempotente y comparación de identidad. 62/62 tests SQL, incluidos nueve nuevos.
+  Antes de migrar producción, conciliar pagos históricos no-approved: el esquema viejo
+  no permite saber si fueron aprobados anteriormente. Backfill solo marca los approved;
+  no se declara resuelta la conciliación ni la política comercial de reembolsos.
