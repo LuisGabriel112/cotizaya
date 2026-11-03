@@ -27,6 +27,18 @@ function preparar(servidor: Partial<ServidorCotizaciones> = {}) {
 const tick = () => new Promise((r) => setTimeout(r, 0));
 
 describe("crearAccionesOptimistas", () => {
+  it("crear revisión espera al servidor y carga el borrador confirmado",async()=>{
+    const revisarCotizacion=vi.fn().mockResolvedValue({...cotizacion,id:"revision"});
+    const {acciones,despachar}=preparar({revisarCotizacion});
+    expect(await acciones.revisar!("c1")).toBe("revision");
+    expect(revisarCotizacion).toHaveBeenCalledWith("c1");
+    expect(despachar).toHaveBeenCalledWith({tipo:"crear",cotizacion:{...cotizacion,id:"revision"}});
+  });
+  it("revisión fallida no inventa borrador local",async()=>{
+    const {acciones,despachar}=preparar({revisarCotizacion:vi.fn().mockRejectedValue(new Error("cupo"))});
+    await expect(acciones.revisar!("c1")).rejects.toThrow("cupo");
+    expect(despachar).not.toHaveBeenCalled();
+  });
   it("crear espera al servidor, despacha y regresa el id", async () => {
     const { acciones, despachar } = preparar();
     expect(await acciones.crear()).toBe("c1");

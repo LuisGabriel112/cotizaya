@@ -71,6 +71,11 @@ const plantilla = (cambios: Partial<FilaPlantilla>): FilaPlantilla => ({
 });
 
 describe("aCotizacion", () => {
+  it("conserva historial y datos del taller de la emisión", () => {
+    const c=aCotizacion({...QUOTE,revision_of_id:"anterior",revision_root_id:"raiz",superseded_at:"2026-11-02T18:00:00Z",
+      issued_snapshot:{taller:{nombre:"Nombre emitido",ciudad:"Veracruz",telefono:"2290000000",condiciones:"50%",plan:"gratis",logo_url:null}}});
+    expect(c).toMatchObject({revisionDe:"anterior",revisionRaiz:"raiz",sustituidaEn:"2026-11-02T18:00:00Z",tallerEmitido:{nombre:"Nombre emitido"}});
+  });
   it("conserva fecha de emisión y vencimiento desde la base", () => {
     expect(aCotizacion({...QUOTE,sent_at:"2026-11-02T18:00:00Z",expires_at:"2026-11-17T18:00:00Z"})).toMatchObject({
       enviadaEn:"2026-11-02T18:00:00Z",venceEn:"2026-11-17T18:00:00Z",

@@ -8,6 +8,7 @@ export type ResultadoCrear = { ok: true; cotizacion: Cotizacion } | { ok: false;
 /** Las Server Actions que confirman cada cambio; se inyectan para probar sin red. */
 export interface ServidorCotizaciones {
   crearCotizacion: () => Promise<ResultadoCrear>;
+  revisarCotizacion?: (id:string) => Promise<Cotizacion>;
   guardarPartida: (id: string, partida: PartidaGuardada) => Promise<PartidaGuardada>;
   quitarPartida: (id: string, partidaId: string) => Promise<void>;
   marcarEnviada: (id: string) => Promise<void>;
@@ -26,6 +27,11 @@ interface Dependencias {
 export function crearAccionesOptimistas({ despachar, servidor, agrupador, alFallar, alAgotarCupo }: Dependencias): AccionesCotizaciones {
   const atras = (p: Promise<unknown>) => void p.catch(alFallar);
   return {
+    ...(servidor.revisarCotizacion && {revisar:async(id:string)=>{
+      const cotizacion=await servidor.revisarCotizacion!(id);
+      despachar({tipo:"crear",cotizacion});
+      return cotizacion.id;
+    }}),
     crear: async () => {
       const resultado = await servidor.crearCotizacion();
       if (!resultado.ok) {

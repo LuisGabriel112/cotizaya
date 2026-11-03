@@ -37,6 +37,10 @@ export interface FilaQuote {
   created_at: string;
   sent_at?: string | null;
   expires_at?: string | null;
+  revision_of_id?: string | null;
+  revision_root_id?: string | null;
+  superseded_at?: string | null;
+  issued_snapshot?: Pick<JsonPublico,"taller"> | null;
   quote_items?: FilaItem[];
 }
 
@@ -112,6 +116,10 @@ export function aCotizacion(q: FilaQuote): Cotizacion {
     creadaEn: q.created_at,
     ...(q.sent_at ? { enviadaEn: q.sent_at } : {}),
     ...(q.expires_at ? { venceEn: q.expires_at } : {}),
+    ...(q.revision_of_id ? {revisionDe:q.revision_of_id} : {}),
+    ...(q.revision_root_id ? {revisionRaiz:q.revision_root_id} : {}),
+    ...(q.superseded_at ? {sustituidaEn:q.superseded_at} : {}),
+    ...(q.issued_snapshot ? {tallerEmitido:aTaller({plan_until:null,...q.issued_snapshot.taller})} : {}),
     avisoPendiente: q.aviso_pendiente ?? false,
     ...(q.viewed_at ? { vistaEn: q.viewed_at } : {}),
   };
